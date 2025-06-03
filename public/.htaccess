@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Define a base da URL. Se o DocumentRoot está corretamente configurado
+    # para a pasta /public e você acessa via meublog.local/,
+    # RewriteBase / é geralmente o correto ou pode ser omitido.
+    RewriteBase /
+
+    # Se o arquivo ou diretório solicitado não existir fisicamente...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # ...redireciona tudo para o index.php, passando a URL original como um parâmetro 'url'.
+    RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+</IfModule>

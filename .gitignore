@@ -1,0 +1,21 @@
+# Pasta do Composer
+/vendor/
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos de configuração de ambiente local (se você usar no futuro)
+.env
+.env.*
+!.env.example
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDEs (opcional, mas recomendado)
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
