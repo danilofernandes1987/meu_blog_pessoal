@@ -25,6 +25,8 @@ class ErrorController extends BaseController
         // (Opcional, mas recomendado) Logar o erro para análise interna
         // error_log("Erro 404 disparado: " . $internalMessage . " - URL: " . ($_SERVER['REQUEST_URI'] ?? 'N/A'));
 
+        echo $internalMessage;
+
         // 3. Renderiza a view de erro 404 usando o layout padrão
         $this->view('errors.404', $data);
     }

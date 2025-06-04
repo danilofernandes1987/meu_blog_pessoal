@@ -19,6 +19,7 @@
             <nav class="nav">
                 <a class="nav-link text-white" href="/">Início</a>
                 <a class="nav-link text-white" href="/home/curriculo">Currículo</a>
+                <a class="nav-link text-white" href="/posts">Posts</a>
                 <!-- <a class="nav-link text-white" href="/contato">Contato</a> -->
             </nav>
         </div>

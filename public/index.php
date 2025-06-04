@@ -1,6 +1,11 @@
 <?php
 // public/index.php
 
+// Inicia a sessão ANTES de qualquer outra coisa
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Inclui o autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -12,5 +17,3 @@ use App\Core\Router;
 
 // Instancia o Router. O construtor do Router fará todo o trabalho.
 new Router();
-
-?>
