@@ -46,11 +46,7 @@ class ContactController extends BaseController
      */
     public function send(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            // Se alguém tentar acessar /contact/send diretamente via GET, redireciona.
-            header('Location: /contact');
-            exit;
-        }
+        $this->validatePostRequest();
 
         // --- 1. Verificação do Honeypot ---
         if (!empty($_POST['website_url'])) {
@@ -109,9 +105,9 @@ class ContactController extends BaseController
             $mail->isHTML(false); // Define que o e-mail não é HTML, mas texto puro
             $mail->Subject = "Nova Mensagem do Site: " . $subject;
             $mail->Body    = "Você recebeu uma nova mensagem do formulário de contato.\n\n" .
-                             "Nome: " . $name . "\n" .
-                             "E-mail: " . $email . "\n" .
-                             "Mensagem:\n" . $message;
+                "Nome: " . $name . "\n" .
+                "E-mail: " . $email . "\n" .
+                "Mensagem:\n" . $message;
             $mail->AltBody = $mail->Body; // Corpo alternativo para clientes de e-mail que não suportam HTML
 
             $mail->send();

@@ -23,7 +23,7 @@ class PostModel
     public function findAll(int $limit, int $offset): array
     {
         try {
-            $query = "SELECT id, title, slug, LEFT(content, 200) AS excerpt, created_at 
+            $query = "SELECT id, title, slug, LEFT(content, 200) AS excerpt, created_at, featured_image 
                       FROM " . $this->table . " 
                       WHERE status = 'published' 
                       ORDER BY created_at DESC
@@ -64,7 +64,7 @@ class PostModel
     public function findBySlug(string $slug): array|false
     {
         try {
-            $query = "SELECT id, title, slug, content, created_at, updated_at 
+            $query = "SELECT id, title, slug, content, created_at, updated_at, featured_image
                       FROM " . $this->table . " 
                       WHERE slug = :slug 
                       LIMIT 1";
@@ -87,7 +87,7 @@ class PostModel
     public function findById(int $id): array|false
     {
         try {
-            $query = "SELECT id, title, slug, content, created_at, updated_at 
+            $query = "SELECT id, title, slug, content, created_at, updated_at, featured_image
                       FROM " . $this->table . " 
                       WHERE id = :id 
                       LIMIT 1";
@@ -140,42 +140,41 @@ class PostModel
      * @param array $data Dados do post (ex: ['title' => ..., 'slug' => ..., 'content' => ..., 'status' => ...])
      * @return int|false Retorna o ID do último post inserido em caso de sucesso, ou false em caso de falha.
      */
+    /**
+     * Cria um novo post no banco de dados.
+     * @param array $data Dados do post (incluindo 'featured_image' opcional)
+     * @return int|false Retorna o ID do último post inserido ou false em caso de falha.
+     */
     public function create(array $data): int|false
     {
         try {
-            // Define as colunas permitidas para inserção para segurança básica
-            // author_id é opcional por enquanto
-            $query = "INSERT INTO " . $this->table . " (title, slug, content, status, author_id) 
-                      VALUES (:title, :slug, :content, :status, :author_id)";
+            // Query CORRIGIDA para incluir a coluna featured_image
+            $query = "INSERT INTO " . $this->table . " (title, slug, content, status, author_id, featured_image) 
+                          VALUES (:title, :slug, :content, :status, :author_id, :featured_image)";
 
             $stmt = $this->db->prepare($query);
 
-            // Bind dos parâmetros
             $stmt->bindParam(':title', $data['title']);
             $stmt->bindParam(':slug', $data['slug']);
             $stmt->bindParam(':content', $data['content']);
             $stmt->bindParam(':status', $data['status']);
 
-            // author_id é opcional, pode ser NULL
+            // Trata o author_id opcional
             $authorId = $data['author_id'] ?? null;
-            if ($authorId === null) {
-                $stmt->bindValue(':author_id', null, PDO::PARAM_NULL);
-            } else {
-                $stmt->bindParam(':author_id', $authorId, PDO::PARAM_INT);
-            }
+            $stmt->bindValue(':author_id', $authorId, PDO::PARAM_INT);
+
+            // Trata o featured_image opcional
+            $featuredImage = $data['featured_image'] ?? null;
+            $stmt->bindValue(':featured_image', $featuredImage, PDO::PARAM_STR);
 
             if ($stmt->execute()) {
-                return (int) $this->db->lastInsertId(); // Retorna o ID do post recém-criado
+                return (int) $this->db->lastInsertId();
             }
             return false;
         } catch (\PDOException $e) {
-            // Em uma aplicação real, trate o erro de slug duplicado (SQLSTATE[23000]) de forma mais específica.
             // error_log("Erro ao criar post: " . $e->getMessage());
-            // Por agora, apenas para debug, podemos mostrar o erro:
-            // if ($e->getCode() == 23000) { // Código para violação de constraint (ex: slug duplicado)
-            //     die("Erro ao criar post: Possível slug duplicado ou outro campo único. Detalhe: " . $e->getMessage());
-            // }
-            // die("Erro ao criar post (PDOException): " . $e->getMessage());
+            // Descomente a linha abaixo para depuração detalhada do erro SQL
+            // die("Erro ao criar post: " . $e->getMessage());
             return false;
         }
     }
@@ -183,23 +182,20 @@ class PostModel
     /**
      * Atualiza um post existente no banco de dados.
      * @param int $id ID do post a ser atualizado.
-     * @param array $data Dados do post a serem atualizados (ex: ['title' => ..., 'slug' => ..., 'content' => ..., 'status' => ...])
+     * @param array $data Dados do post a serem atualizados (incluindo 'featured_image')
      * @return bool Retorna true em caso de sucesso, ou false em caso de falha.
      */
     public function update(int $id, array $data): bool
     {
         try {
-            // author_id pode ser atualizado se fizer parte dos $data
-            // Se não for passado, não será alterado (ou defina como NULL se for o caso)
-            $authorId = $data['author_id'] ?? null; // Pega o author_id se existir nos dados, senão null
-
+            // Query CORRIGIDA para incluir featured_image na cláusula SET
             $query = "UPDATE " . $this->table . " 
-                      SET title = :title, 
-                          slug = :slug, 
-                          content = :content, 
-                          status = :status" .
-                ($authorId !== null ? ", author_id = :author_id" : "") . // Adiciona author_id à query apenas se fornecido
-                " WHERE id = :id";
+                          SET title = :title, 
+                              slug = :slug, 
+                              content = :content, 
+                              status = :status,
+                              featured_image = :featured_image -- Adicionado aqui
+                         WHERE id = :id";
 
             $stmt = $this->db->prepare($query);
 
@@ -209,24 +205,25 @@ class PostModel
             $stmt->bindParam(':status', $data['status']);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
-            if ($authorId !== null) {
-                $stmt->bindParam(':author_id', $authorId, PDO::PARAM_INT);
-            }
+            // Trata o featured_image. Se não for passado em $data, mantenha o valor existente.
+            // O controller já cuida dessa lógica, então aqui apenas fazemos o bind.
+            $stmt->bindValue(':featured_image', $data['featured_image'] ?? null, PDO::PARAM_STR);
 
             return $stmt->execute();
         } catch (\PDOException $e) {
             // error_log("Erro ao atualizar post ID '$id': " . $e->getMessage());
-            // die("Erro ao atualizar post (PDOException): " . $e->getMessage());
+            // die("Erro ao atualizar post: " . $e->getMessage());
             return false;
         }
     }
-
+    
     /**
      * Exclui um post do banco de dados pelo seu ID.
      * @param int $id ID do post a ser excluído.
      * @return bool Retorna true em caso de sucesso, ou false em caso de falha.
      */
-    public function delete(int $id): bool {
+    public function delete(int $id): bool
+    {
         try {
             $query = "DELETE FROM " . $this->table . " WHERE id = :id";
             $stmt = $this->db->prepare($query);

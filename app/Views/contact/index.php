@@ -14,7 +14,7 @@ displayFlashMessage('contact_feedback');
     <div class="col-md-8">
         <form method="POST" action="/contact/send"> <?php // Rota para o método send() 
                                                     ?>
-                                                    
+            <?= csrfInput(); ?>
             <div class="honeypot-field" style="display:none;">
                 <label for="website_url">Website</label>
                 <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">

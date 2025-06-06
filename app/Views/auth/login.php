@@ -1,9 +1,12 @@
-<?php // app/Views/auth/login.php ?>
+<?php // app/Views/auth/login.php 
+?>
 <main class="form-signin">
-    <form method="POST" action="/auth/login"> <?php // Action aponta para a rota que processará o login ?>
-        <!-- <img class="mb-4" src="/images/logo-placeholder.png" alt="Logo" width="72" height="57"> <?php // Coloque um logo se tiver, ou remova ?> -->
+    <form method="POST" action="/auth/login"> <?php // Action aponta para a rota que processará o login 
+                                                ?>
+        <!-- <img class="mb-4" src="/images/logo-placeholder.png" alt="Logo" width="72" height="57"> <?php // Coloque um logo se tiver, ou remova 
+                                                                                                        ?> -->
         <h1 class="h3 mb-3 fw-normal">Login Administrativo</h1>
-
+        <?= csrfInput(); ?>
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger" role="alert">
                 <?php echo htmlspecialchars($error); ?>

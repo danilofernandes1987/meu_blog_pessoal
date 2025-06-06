@@ -49,4 +49,46 @@ if (!function_exists('displayFlashMessage')) {
             unset($_SESSION['flash_messages'][$key]);
         }
     }
+
+    if (!function_exists('generateCsrfToken')) {
+        /**
+         * Gera e armazena um token CSRF na sessão, se não existir um.
+         * @return string O token CSRF.
+         */
+        function generateCsrfToken(): string
+        {
+            if (empty($_SESSION['csrf_token'])) {
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Gera uma string aleatória segura
+            }
+            return $_SESSION['csrf_token'];
+        }
+    }
+
+    if (!function_exists('validateCsrfToken')) {
+        /**
+         * Valida o token CSRF enviado com o que está na sessão.
+         * @param string|null $submittedToken O token vindo do formulário ($_POST).
+         * @return bool True se for válido, false caso contrário.
+         */
+        function validateCsrfToken(?string $submittedToken): bool
+        {
+            if (isset($_SESSION['csrf_token']) && $submittedToken && hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+                // O token é válido. Podemos removê-lo para que cada formulário tenha um novo (opcional, mas mais seguro).
+                // unset($_SESSION['csrf_token']); // Se remover, precisa gerar um novo a cada requisição de formulário
+                return true;
+            }
+            return false;
+        }
+    }
+
+    if (!function_exists('csrfInput')) {
+        /**
+         * Gera o campo de input hidden para o token CSRF.
+         * @return string O HTML do input.
+         */
+        function csrfInput(): string
+        {
+            return '<input type="hidden" name="csrf_token" value="' . generateCsrfToken() . '">';
+        }
+    }
 }

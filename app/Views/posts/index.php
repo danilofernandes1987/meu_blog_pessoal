@@ -13,9 +13,11 @@
             <div class="col">
                 <div class="card h-100"> <?php // h-100 para cards da mesma altura na linha 
                                             ?>
-                    <?php /* Se você tivesse uma imagem de destaque para o post:
-                    <img src="/images/post-thumbnails/<?php echo htmlspecialchars($post['thumbnail_image'] ?? 'default.jpg'); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($post['title']); ?>">
-                    */ ?>
+                    <?php if (!empty($post['featured_image'])): ?>
+                        <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>">
+                            <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($post['title']); ?>">
+                        </a>
+                    <?php endif; ?>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">
                             <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>" class="text-decoration-none text-body">

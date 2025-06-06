@@ -17,8 +17,23 @@ $contentValue = $old_input['content'] ?? $post['content'] ?? '';
 $statusValue = $old_input['status'] ?? $post['status'] ?? 'draft';
 ?>
 
-<form method="POST" action="/admin/posts/update/<?php echo $post['id']; ?>"> <?php // Rota para o método update(), passando o ID 
-                                                                                ?>
+<form method="POST" action="/admin/posts/update/<?php echo $post['id']; ?>" enctype="multipart/form-data">
+
+    <?= csrfInput(); ?>
+    <div class="mb-3">
+        <label for="featured_image" class="form-label">Imagem de Destaque</label>
+        <?php if (!empty($post['featured_image'])): ?>
+            <div class="mb-2">
+                <p>Imagem Atual:</p>
+                <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="Imagem de destaque atual" class="img-thumbnail" style="max-width: 200px;">
+                <p class="form-text mt-1">Envie um novo arquivo abaixo para substituir a imagem atual.</p>
+            </div>
+        <?php endif; ?>
+        <input class="form-control" type="file" id="featured_image" name="featured_image">
+        <?php if (isset($errors['featured_image'])): ?>
+            <div class="invalid-feedback d-block"><?php echo htmlspecialchars($errors['featured_image']); ?></div>
+        <?php endif; ?>
+    </div>
     <div class="mb-3">
         <label for="title" class="form-label">Título do Post</label>
         <input type="text" class="form-control <?php echo isset($errors['title']) ? 'is-invalid' : ''; ?>" id="title" name="title" value="<?php echo htmlspecialchars($titleValue); ?>" required>
@@ -63,21 +78,21 @@ $statusValue = $old_input['status'] ?? $post['status'] ?? 'draft';
 
 <script src="https://cdn.tiny.cloud/1/5037jfqsjqwoqlp4q4lrwa8n0ehwfxypfz9crmb3fl5oiyo0/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-  tinymce.init({
-    selector: 'textarea#content', // Seleciona a textarea com id="content"
-    plugins: 'code table lists link image media help wordcount autosave preview searchreplace visualblocks',
-    toolbar: 'undo redo | formatselect | bold italic underline strikethrough | ' +
-             'alignleft aligncenter alignright alignjustify | ' +
-             'bullist numlist outdent indent | lists table | ' +
-             'link image media | searchreplace visualblocks | ' +
-             'removeformat | code | preview | help',
-    menubar: 'file edit view insert format tools table help',
-    height: 400,
-    // language: 'pt_BR', // Se quiser em português, pode ser necessário baixar um pacote de idioma ou verificar se a CDN suporta via config
-    // Para fazer upload de imagens (requer configuração no lado do servidor também, mais complexo):
-    // images_upload_url: '/admin/images/upload', // Exemplo de URL de upload
-    // images_upload_base_path: '/media/', // Exemplo
-    // automatic_uploads: true,
-    // file_picker_types: 'image media',
-  });
+    tinymce.init({
+        selector: 'textarea#content', // Seleciona a textarea com id="content"
+        plugins: 'code table lists link image media help wordcount autosave preview searchreplace visualblocks',
+        toolbar: 'undo redo | formatselect | bold italic underline strikethrough | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | lists table | ' +
+            'link image media | searchreplace visualblocks | ' +
+            'removeformat | code | preview | help',
+        menubar: 'file edit view insert format tools table help',
+        height: 400,
+        // language: 'pt_BR', // Se quiser em português, pode ser necessário baixar um pacote de idioma ou verificar se a CDN suporta via config
+        // Para fazer upload de imagens (requer configuração no lado do servidor também, mais complexo):
+        // images_upload_url: '/admin/images/upload', // Exemplo de URL de upload
+        // images_upload_base_path: '/media/', // Exemplo
+        // automatic_uploads: true,
+        // file_picker_types: 'image media',
+    });
 </script>

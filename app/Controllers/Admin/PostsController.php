@@ -35,14 +35,69 @@ class PostsController extends BaseAdminController
         $this->view('admin.posts.index', $data, 'layouts.admin');
     }
 
-    // Futuramente: create(), store(), edit(), update(), delete()
+    /**
+     * Lida com o upload da imagem de destaque.
+     * @param array $fileInput O array do arquivo vindo de $_FILES['featured_image'].
+     * @param string|null $oldImageFilename O nome do arquivo da imagem antiga, para exclusão durante a atualização.
+     * @return string|null|false Retorna o nome do novo arquivo em sucesso, null se nenhum arquivo foi enviado, ou false em caso de erro de upload/validação.
+     */
+    protected function handleImageUpload(array $fileInput, ?string $oldImageFilename = null): string|null|false
+    {
+        // Verifica se um arquivo foi enviado e se não houve erros no upload
+        if (isset($fileInput) && $fileInput['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../../public/uploads/images/';
+            $maxFileSize = 2 * 1024 * 1024; // 2 MB
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+            // 1. Validação de tamanho
+            if ($fileInput['size'] > $maxFileSize) {
+                // erro de tamanho
+                $_SESSION['errors']['featured_image'] = 'O arquivo de imagem é muito grande (máximo 2MB).';
+                return false;
+            }
+
+            // 2. Validação de tipo de arquivo
+            $fileType = mime_content_type($fileInput['tmp_name']);
+            if (!in_array($fileType, $allowedTypes)) {
+                // erro de tipo
+                $_SESSION['errors']['featured_image'] = 'Tipo de arquivo inválido. Apenas JPG, PNG, GIF e WebP são permitidos.';
+                return false;
+            }
+
+            // 3. Gerar nome de arquivo único para evitar conflitos
+            $fileName = time() . '-' . preg_replace('/[^A-Za-z0-9.\-]/', '', basename($fileInput['name']));
+            $targetFile = $uploadDir . $fileName;
+
+            // 4. Mover o arquivo para o diretório de uploads
+            if (move_uploaded_file($fileInput['tmp_name'], $targetFile)) {
+                // 5. Se moveu com sucesso e existe uma imagem antiga, delete-a
+                if ($oldImageFilename && file_exists($uploadDir . $oldImageFilename)) {
+                    unlink($uploadDir . $oldImageFilename);
+                }
+                return $fileName; // Retorna o nome do novo arquivo
+            } else {
+                // erro ao mover
+                $_SESSION['errors']['featured_image'] = 'Ocorreu um erro ao salvar a imagem.';
+                return false;
+            }
+        } elseif (isset($fileInput) && $fileInput['error'] !== UPLOAD_ERR_NO_FILE) {
+            // Se houve um erro de upload que não seja "nenhum arquivo enviado"
+            $_SESSION['errors']['featured_image'] = 'Ocorreu um erro durante o upload da imagem.';
+            return false;
+        }
+
+        // Se nenhum arquivo novo foi enviado, retorna null
+        return null;
+    }
+
+    // create(), store(), edit(), update(), delete()
 
     /**
      * Exibe o formulário para criar um novo post.
      * Acessado via GET /admin/posts/create
      */
     public function create(): void
-    { // << NOVO MÉTODO
+    {
         $data = [
             'pageTitle' => 'Criar Novo Post',
             'contentTitle' => 'Adicionar Novo Post ao Blog',
@@ -64,6 +119,19 @@ class PostsController extends BaseAdminController
     public function store(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validatePostRequest(); // Valida CSRF e método POST
+
+            // Lógica de upload da imagem
+            $newImageName = $this->handleImageUpload($_FILES['featured_image'] ?? null);
+            if ($newImageName === false) { // Ocorreu um erro de upload
+                $_SESSION['old_input'] = $_POST;
+                header('Location: /admin/posts/create');
+                exit;
+            }
+
+            echo $newImageName;
+
+
             // Validação básica (em um app real, use uma biblioteca de validação ou regras mais robustas)
             $errors = [];
             $title = trim($_POST['title'] ?? '');
@@ -90,6 +158,8 @@ class PostsController extends BaseAdminController
                 // Guarda os erros e o input antigo na sessão para exibir no formulário
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old_input'] = $_POST;
+                // Se o upload falhou e a validação de outros campos também, os erros de imagem já estão na sessão
+                $_SESSION['errors'] = array_merge($_SESSION['errors'] ?? [], $errors);
                 // Usando flash message para erro de validação geral se necessário, embora os erros de campo sejam mais específicos
                 // setFlashMessage('post_form_error', 'Por favor, corrija os erros no formulário.', 'danger');
                 header('Location: /admin/posts/create'); // Redireciona de volta para o formulário
@@ -102,6 +172,7 @@ class PostsController extends BaseAdminController
                 'slug' => $slug,
                 'content' => $content,
                 'status' => $status,
+                'featured_image' => $newImageName,
                 'author_id' => $_SESSION['admin_user_id'] ?? null // Pega o ID do admin logado
             ];
 
@@ -165,11 +236,20 @@ class PostsController extends BaseAdminController
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validatePostRequest();
             $postOriginal = $this->postModel->findById($id);
             if (!$postOriginal) {
                 $errorController = new ErrorController();
                 $errorController->show404("Post com ID '$id' não encontrado para atualização.");
                 return;
+            }
+
+            // Lógica de upload da nova imagem (passando o nome da antiga para ser deletada)
+            $newImageName = $this->handleImageUpload($_FILES['featured_image'] ?? null, $postOriginal['featured_image']);
+            if ($newImageName === false) { // Ocorreu um erro de upload
+                $_SESSION['old_input'] = $_POST;
+                header('Location: /admin/posts/edit/' . $id);
+                exit;
             }
 
             $errors = [];
@@ -210,17 +290,18 @@ class PostsController extends BaseAdminController
                 'slug' => $slug,
                 'content' => $content,
                 'status' => $status,
+                'featured_image' => ($newImageName !== null) ? $newImageName : $postOriginal['featured_image'],
                 // author_id geralmente não muda na edição, ou seria uma funcionalidade separada.
                 // Se você quiser permitir a mudança de autor, adicione aqui:
                 // 'author_id' => $_POST['author_id'] ?? $postOriginal['author_id'],
             ];
 
             if ($this->postModel->update($id, $dataToUpdate)) {
-                setFlashMessage('post_feedback', 'Post atualizado com sucesso!', 'success'); // << AQUI
+                setFlashMessage('post_feedback', 'Post atualizado com sucesso!', 'success');
                 header('Location: /admin/posts');
                 exit;
             } else {
-                setFlashMessage('post_feedback', 'Erro ao atualizar o post. Verifique se o novo slug já existe ou tente novamente.', 'danger'); // << AQUI
+                setFlashMessage('post_feedback', 'Erro ao atualizar o post. Verifique se o novo slug já existe ou tente novamente.', 'danger');
                 $_SESSION['old_input'] = $_POST;
                 $_SESSION['old_input']['id'] = $id;
                 header('Location: /admin/posts/edit/' . $id);
@@ -252,6 +333,13 @@ class PostsController extends BaseAdminController
         }
 
         if ($this->postModel->delete($id)) {
+            // Se o post foi deletado do banco, também deleta a imagem associada
+            if (!empty($post['featured_image'])) {
+                $imagePath = __DIR__ . '/../../../public/uploads/images/' . $post['featured_image'];
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
             setFlashMessage('post_feedback', 'Post excluído com sucesso!', 'success'); // << AQUI
         } else {
             setFlashMessage('post_feedback', 'Erro ao excluir o post. Tente novamente.', 'danger'); // << AQUI

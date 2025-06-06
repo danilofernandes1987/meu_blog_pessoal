@@ -8,7 +8,16 @@
     <div class="alert alert-danger"><?php echo htmlspecialchars($errors['database']); ?></div>
 <?php endif; ?>
 
-<form method="POST" action="/admin/posts/store">
+<form method="POST" enctype="multipart/form-data" action="/admin/posts/store">
+    <?= csrfInput(); ?>
+    <div class="mb-3">
+        <label for="featured_image" class="form-label">Imagem de Destaque</label>
+        <input class="form-control" type="file" id="featured_image" name="featured_image">
+        <div class="form-text">Envie uma imagem (JPG, PNG, GIF, WebP) para ser a capa do seu post.</div>
+        <?php if (isset($errors['featured_image'])): ?>
+            <div class="invalid-feedback d-block"><?php echo htmlspecialchars($errors['featured_image']); ?></div>
+        <?php endif; ?>
+    </div>
     <div class="mb-3">
         <label for="title" class="form-label">Título do Post</label>
         <input type="text" class="form-control <?php echo isset($errors['title']) ? 'is-invalid' : ''; ?>" id="title" name="title" value="<?php echo htmlspecialchars($old_input['title'] ?? ''); ?>" required>

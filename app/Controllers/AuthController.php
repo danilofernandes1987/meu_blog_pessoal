@@ -37,6 +37,7 @@ class AuthController extends BaseController
         $usernameAttempt = ''; // Para repopular o campo username em caso de erro
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validatePostRequest();
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
             $usernameAttempt = $username; // Guarda a tentativa
