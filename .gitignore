@@ -1,5 +1,6 @@
 # Pasta do Composer
 /vendor/
+/.env
 
 # Arquivos de log
 *.log

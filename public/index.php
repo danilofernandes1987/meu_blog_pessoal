@@ -9,6 +9,17 @@ if (session_status() === PHP_SESSION_NONE) {
 // Inclui o autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// --- CARREGA AS VARIÁVEIS DE AMBIENTE DO .ENV ---
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); // Aponta para a raiz do projeto
+    $dotenv->load();
+} catch (\Dotenv\Exception\InvalidPathException $e) {
+    // Se o arquivo .env não for encontrado, o ideal é parar a aplicação
+    // com uma mensagem clara, especialmente em desenvolvimento.
+    die("Não foi possível carregar o arquivo .env. Por favor, crie um a partir do .env.example. Erro: " . $e->getMessage());
+}
+// --- FIM DO CARREGAMENTO DO .ENV ---
+
 // Importa a classe Router
 use App\Core\Router;
 

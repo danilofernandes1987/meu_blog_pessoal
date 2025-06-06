@@ -19,7 +19,7 @@
             // Se o seu conteúdo já for HTML (de um editor WYSIWYG, por exemplo),
             // você não precisaria de htmlspecialchars() aqui, mas precisaria sanitizar na entrada.
             // Para conteúdo que pode ser texto simples com quebras de linha:
-            echo nl2br(htmlspecialchars($post['content'] ?? 'Conteúdo do post não disponível.'));
+            echo $post['content'] ?? 'Conteúdo do post não disponível.'; // Exibe o HTML diretamente
         ?>
     </div>
 </article>

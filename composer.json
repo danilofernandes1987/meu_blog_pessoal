@@ -8,6 +8,9 @@
             "App\\Controllers\\": "app/Controllers/",
             "App\\Core\\": "app/Core/",
             "App\\Models\\": "app/Models/"
-        }
+        },
+        "files": [
+            "app/Core/flash_helpers.php"
+        ]
     }
 }

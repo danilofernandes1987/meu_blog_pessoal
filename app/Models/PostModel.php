@@ -102,9 +102,140 @@ class PostModel
         }
     }
 
+    /**
+     * Busca todos os posts para a área administrativa, sem filtro de status por padrão.
+     * @param string $orderBy Coluna para ordenação.
+     * @param string $orderDir Direção da ordenação (ASC ou DESC).
+     * @return array Lista de posts.
+     */
+    public function getAllForAdmin(string $orderBy = 'created_at', string $orderDir = 'DESC'): array
+    {
+        try {
+            // Validação simples para orderBy e orderDir para evitar SQL Injection
+            $allowedOrderBy = ['id', 'title', 'slug', 'created_at', 'updated_at', 'status'];
+            $allowedOrderDir = ['ASC', 'DESC'];
+            if (!in_array($orderBy, $allowedOrderBy)) {
+                $orderBy = 'created_at'; // Default seguro
+            }
+            if (!in_array(strtoupper($orderDir), $allowedOrderDir)) {
+                $orderDir = 'DESC'; // Default seguro
+            }
+
+            $query = "SELECT id, title, slug, status, created_at, updated_at 
+                      FROM " . $this->table . " 
+                      ORDER BY " . $orderBy . " " . $orderDir;
+
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            // error_log("Erro ao buscar todos os posts para admin: " . $e->getMessage());
+            return [];
+        }
+    }
+
     // --- Métodos para Criar, Atualizar e Deletar Posts (CRUD) ---
-    // Adicionaremos estes métodos mais tarde, quando formos construir o painel administrativo.
-    // public function create(array $data): int|false { ... }
-    // public function update(int $id, array $data): bool { ... }
-    // public function delete(int $id): bool { ... }
+
+    /**
+     * Cria um novo post no banco de dados.
+     * @param array $data Dados do post (ex: ['title' => ..., 'slug' => ..., 'content' => ..., 'status' => ...])
+     * @return int|false Retorna o ID do último post inserido em caso de sucesso, ou false em caso de falha.
+     */
+    public function create(array $data): int|false
+    {
+        try {
+            // Define as colunas permitidas para inserção para segurança básica
+            // author_id é opcional por enquanto
+            $query = "INSERT INTO " . $this->table . " (title, slug, content, status, author_id) 
+                      VALUES (:title, :slug, :content, :status, :author_id)";
+
+            $stmt = $this->db->prepare($query);
+
+            // Bind dos parâmetros
+            $stmt->bindParam(':title', $data['title']);
+            $stmt->bindParam(':slug', $data['slug']);
+            $stmt->bindParam(':content', $data['content']);
+            $stmt->bindParam(':status', $data['status']);
+
+            // author_id é opcional, pode ser NULL
+            $authorId = $data['author_id'] ?? null;
+            if ($authorId === null) {
+                $stmt->bindValue(':author_id', null, PDO::PARAM_NULL);
+            } else {
+                $stmt->bindParam(':author_id', $authorId, PDO::PARAM_INT);
+            }
+
+            if ($stmt->execute()) {
+                return (int) $this->db->lastInsertId(); // Retorna o ID do post recém-criado
+            }
+            return false;
+        } catch (\PDOException $e) {
+            // Em uma aplicação real, trate o erro de slug duplicado (SQLSTATE[23000]) de forma mais específica.
+            // error_log("Erro ao criar post: " . $e->getMessage());
+            // Por agora, apenas para debug, podemos mostrar o erro:
+            // if ($e->getCode() == 23000) { // Código para violação de constraint (ex: slug duplicado)
+            //     die("Erro ao criar post: Possível slug duplicado ou outro campo único. Detalhe: " . $e->getMessage());
+            // }
+            // die("Erro ao criar post (PDOException): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Atualiza um post existente no banco de dados.
+     * @param int $id ID do post a ser atualizado.
+     * @param array $data Dados do post a serem atualizados (ex: ['title' => ..., 'slug' => ..., 'content' => ..., 'status' => ...])
+     * @return bool Retorna true em caso de sucesso, ou false em caso de falha.
+     */
+    public function update(int $id, array $data): bool
+    {
+        try {
+            // author_id pode ser atualizado se fizer parte dos $data
+            // Se não for passado, não será alterado (ou defina como NULL se for o caso)
+            $authorId = $data['author_id'] ?? null; // Pega o author_id se existir nos dados, senão null
+
+            $query = "UPDATE " . $this->table . " 
+                      SET title = :title, 
+                          slug = :slug, 
+                          content = :content, 
+                          status = :status" .
+                ($authorId !== null ? ", author_id = :author_id" : "") . // Adiciona author_id à query apenas se fornecido
+                " WHERE id = :id";
+
+            $stmt = $this->db->prepare($query);
+
+            $stmt->bindParam(':title', $data['title']);
+            $stmt->bindParam(':slug', $data['slug']);
+            $stmt->bindParam(':content', $data['content']);
+            $stmt->bindParam(':status', $data['status']);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+            if ($authorId !== null) {
+                $stmt->bindParam(':author_id', $authorId, PDO::PARAM_INT);
+            }
+
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            // error_log("Erro ao atualizar post ID '$id': " . $e->getMessage());
+            // die("Erro ao atualizar post (PDOException): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Exclui um post do banco de dados pelo seu ID.
+     * @param int $id ID do post a ser excluído.
+     * @return bool Retorna true em caso de sucesso, ou false em caso de falha.
+     */
+    public function delete(int $id): bool {
+        try {
+            $query = "DELETE FROM " . $this->table . " WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            // error_log("Erro ao excluir post ID '$id': " . $e->getMessage());
+            // die("Erro ao excluir post (PDOException): " . $e->getMessage());
+            return false;
+        }
+    }
 }

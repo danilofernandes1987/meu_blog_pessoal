@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Admin'; ?> - <?php echo htmlspecialchars($siteName ?? ''); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/admin-style.css"> </head>
+    <link rel="stylesheet" href="/css/admin-style.css">
+</head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="/admin/dashboard"><?php echo htmlspecialchars($siteName ?? 'Painel Admin'); ?></a>
+            <a class="navbar-brand" href="/admin/dashboard"><?php echo htmlspecialchars($shortSiteOwner ?? 'Painel Admin'); ?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="adminNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/admin/dashboard">Dashboard</a>
+                        <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/admin/dashboard' || $_SERVER['REQUEST_URI'] === '/admin/dashboard/') ? 'active' : ''; ?>" href="/admin/dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/posts">Posts</a> </li>
-                    </ul>
+                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/posts') === 0) ? 'active' : ''; ?>" href="/admin/posts">Posts</a>
+                    </li>
+                </ul>
+                </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <span class="navbar-text me-3">
@@ -36,12 +41,24 @@
     </nav>
 
     <div class="container">
-        <?php echo $contentForLayout; // Conteúdo da view específica do admin aqui ?>
+        <?php
+        // Exibe a flash message se existir para a chave 'post_feedback'
+        // ou qualquer outra chave que você venha a usar.
+        displayFlashMessage('post_feedback');
+        // Você pode adicionar chamadas para displayFlashMessage com outras chaves aqui se precisar
+        // displayFlashMessage('user_feedback');
+        // displayFlashMessage('general_error');
+        ?>
+
+        <?php echo $contentForLayout; // Conteúdo da view específica do admin aqui 
+        ?>
     </div>
 
     <footer class="text-center text-muted py-3 mt-auto bg-light">
         <p>&copy; <?php echo date('Y'); ?> Painel Administrativo</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin_scripts.js"></script> 
 </body>
+
 </html>

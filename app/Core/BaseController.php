@@ -16,12 +16,14 @@ class BaseController
         }
     }
 
-    protected function view(string $viewName, array $data = [], string $layoutName = 'layouts.main'): void {
+    protected function view(string $viewName, array $data = [], string $layoutName = 'layouts.main'): void
+    {
         // Dados padrão do site que estarão sempre disponíveis no layout e na view
         $baseData = [
-            'siteName'     => $this->siteConfig['siteName'] ?? 'Site Padrão',
-            'myName'       => $this->siteConfig['siteOwner'] ?? 'Proprietário Padrão',
-            'pageTitle'    => $this->siteConfig['defaultPageTitle'] ?? 'Título Padrão',
+            'siteName'          => $this->siteConfig['siteName'] ?? 'Site Padrão',
+            'myName'            => $this->siteConfig['siteOwner'] ?? 'Proprietário Padrão',
+            'pageTitle'         => $this->siteConfig['defaultPageTitle'] ?? 'Título Padrão',
+            'shortSiteOwner'    => $this->siteConfig['shortSiteOwner'] ?? 'Nome Padrão',
         ];
 
         // Mescla os dados base com os dados específicos da página.
