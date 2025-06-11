@@ -25,7 +25,7 @@
                             </a>
                         </h5>
                         <p class="card-text flex-grow-1">
-                            <?php echo htmlspecialchars($post['excerpt'] ?? ''); ?>...
+                            <?php echo $post['excerpt'] ?? ''; ?>...
                         </p>
                         <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>" class="btn btn-primary mt-auto align-self-start">Leia Mais</a>
                     </div>

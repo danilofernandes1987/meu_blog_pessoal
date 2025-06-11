@@ -1,0 +1,41 @@
+/* custom.css */
+
+/* Fundo claro e full-height */
+body {
+    background-color: #f8f9fa;
+  }
+  
+  /* Centra o card vertical e horizontalmente */
+  .form-signin-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Estilo do card do formulário */
+  .form-signin-card {
+    max-width: 400px;
+    width: 100%;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Logo no topo */
+  .form-signin-card .logo {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+  
+  /* Botão principal */
+  .btn-primary {
+    background-color: #0069d9;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: #0053ba;
+  }
+  

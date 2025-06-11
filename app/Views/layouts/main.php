@@ -13,18 +13,50 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-    <header class="site-header bg-dark text-white py-3 mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <h1 class="text-center"><?php echo isset($siteName) ? htmlspecialchars($siteName) : 'Meu Blog Pessoal'; ?></h1>
-            <nav class="nav">
-                <a class="nav-link text-white" href="/">Início</a>
-                <a class="nav-link text-white" href="/home/curriculo">Currículo</a>
-                <a class="nav-link text-white" href="/contact">Contato</a>
-                <a class="nav-link text-white" href="/posts">Posts</a>
-                <!-- <a class="nav-link text-white" href="/contato">Contato</a> -->
-            </nav>
+            <!-- Site Name como marca -->
+            <a class="navbar-brand" href="/">
+                <?php echo isset($siteName) ? htmlspecialchars($siteName) : 'Meu Blog Pessoal'; ?>
+            </a>
+
+            <!-- Botão de toggler (o "hambúrguer") -->
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Itens do menu dentro do collapse -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home/curriculo">Currículo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contato</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts">Posts</a>
+                    </li>
+                    <!-- Se não for mais necessário, pode remover o link comentado abaixo:
+        <li class="nav-item">
+          <a class="nav-link" href="/contato">Contato</a>
+        </li>
+        -->
+                </ul>
+            </div>
         </div>
-    </header>
+    </nav>
+
 
     <main class="site-content container">
         <?php echo $contentForLayout; ?>

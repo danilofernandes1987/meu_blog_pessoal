@@ -11,7 +11,7 @@ class HomeController extends BaseController
     public function index(): void
     {
         $data = [
-            'contentTitle' => 'Danilo Fernandes da Silva'
+            'contentTitle' => 'Danilo Fernandes da Silva',
         ];
 
         $this->view('home.index', $data);
