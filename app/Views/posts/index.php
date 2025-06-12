@@ -15,7 +15,13 @@
                                             ?>
                     <?php if (!empty($post['featured_image'])): ?>
                         <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>">
-                            <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($post['title']); ?>">
+                            <!-- Container com altura fixa para a imagem -->
+                            <div class="card-img-container">
+                                <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>"
+                                    class="card-img-top"
+                                    alt="<?php echo htmlspecialchars($post['title']); ?>"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                         </a>
                     <?php endif; ?>
                     <div class="card-body d-flex flex-column">

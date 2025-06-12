@@ -57,24 +57,3 @@
     <button type="submit" class="btn btn-primary">Salvar Post</button>
     <a href="/admin/posts" class="btn btn-secondary">Cancelar</a>
 </form>
-
-<script src="https://cdn.tiny.cloud/1/5037jfqsjqwoqlp4q4lrwa8n0ehwfxypfz9crmb3fl5oiyo0/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-<script>
-    tinymce.init({
-        selector: 'textarea#content', // Seleciona a textarea com id="content"
-        plugins: 'code table lists link image media help wordcount autosave preview searchreplace visualblocks',
-        toolbar: 'undo redo | formatselect | bold italic underline strikethrough | ' +
-            'alignleft aligncenter alignright alignjustify | ' +
-            'bullist numlist outdent indent | lists table | ' +
-            'link image media | searchreplace visualblocks | ' +
-            'removeformat | code | preview | help',
-        menubar: 'file edit view insert format tools table help',
-        height: 400,
-        // language: 'pt_BR', // Se quiser em português, pode ser necessário baixar um pacote de idioma ou verificar se a CDN suporta via config
-        // Para fazer upload de imagens (requer configuração no lado do servidor também, mais complexo):
-        // images_upload_url: '/admin/images/upload', // Exemplo de URL de upload
-        // images_upload_base_path: '/media/', // Exemplo
-        // automatic_uploads: true,
-        // file_picker_types: 'image media',
-    });
-</script>

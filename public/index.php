@@ -6,6 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+/**
+ * Define a constante PUBLIC_PATH com o caminho absoluto para este diretório.
+ * __DIR__ retorna o caminho do diretório onde este arquivo (index.php) está.
+ * Esta é a forma mais confiável de saber onde a pasta pública realmente está.
+ */
+define('PUBLIC_PATH', __DIR__);
+
 // Inclui o autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 

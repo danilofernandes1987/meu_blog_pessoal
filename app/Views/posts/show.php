@@ -4,7 +4,13 @@
 ?>
 
 <?php if (!empty($post['featured_image'])): ?>
-    <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>" class="img-fluid rounded mb-4" alt="<?php echo htmlspecialchars($post['title']); ?>">
+    <!-- Container com altura máxima para a imagem de destaque -->
+    <div class="post-featured-image-container">
+        <img src="/uploads/images/<?php echo htmlspecialchars($post['featured_image']); ?>"
+            class="img-fluid"
+            alt="<?php echo htmlspecialchars($post['title']); ?>"
+            style="width: 100%; height: 100%; object-fit: cover;">
+    </div>
 <?php endif; ?>
 
 <article class="blog-post">

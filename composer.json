@@ -2,7 +2,10 @@
     "name": "danilo1987/meu-blog-pessoal",
     "description": "Meu site pessoal e blog construído do zero.",
     "type": "project",
-    "require": {},
+    "require": {
+        "phpmailer/phpmailer": "^6.10",
+        "vlucas/phpdotenv": "^5.6"
+    },
     "autoload": {
         "psr-4": {
             "App\\Controllers\\": "app/Controllers/",
@@ -10,7 +13,8 @@
             "App\\Models\\": "app/Models/"
         },
         "files": [
-            "app/Core/flash_helpers.php"
+            "app/Core/flash_helpers.php",
+            "app/Core/path_helpers.php"
         ]
     }
 }

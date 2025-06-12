@@ -53,6 +53,7 @@ class AuthController extends BaseController
                     $_SESSION['admin_user_id'] = $adminUser['id'];
                     $_SESSION['admin_username'] = $adminUser['username'];
                     $_SESSION['admin_name'] = $adminUser['name'];
+                    $_SESSION['admin_photo'] = $adminUser['photo'];
                     // Poderia adicionar um timestamp de login aqui se quisesse: $_SESSION['admin_login_time'] = time();
 
                     header('Location: /admin/dashboard'); // Redireciona para o painel admin

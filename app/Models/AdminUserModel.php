@@ -23,7 +23,7 @@ class AdminUserModel
     public function findByUsername(string $username): array|false
     {
         try {
-            $query = "SELECT id, username, email, password_hash, name 
+            $query = "SELECT id, username, email, password_hash, name, photo 
                       FROM " . $this->table . " 
                       WHERE username = :username 
                       LIMIT 1";

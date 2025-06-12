@@ -7,7 +7,24 @@
 <hr class="mb-4">
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-4 order-md-2">
+        <div class="text-center">
+            <!-- A imagem agora aponta para um caminho estático novamente -->
+            <img src="/images/danilo.png" alt="Foto de Danilo Fernandes da Silva" class="img-fluid rounded-circle mb-3" style="width: 250px; height: 250px; object-fit: cover; border: 5px solid #eee;">
+
+            <!-- O nome usa a variável global $myName, que vem do seu config/app.php -->
+            <h4><?php echo htmlspecialchars($myName ?? 'Danilo F. Silva'); ?></h4>
+            <p class="text-muted">Técnico de TI | Entusiasta PHP</p>
+
+            <a href="https://www.linkedin.com/in/danilofernandessilva/" class="btn btn-primary btn-sm" aria-label="LinkedIn" target="_blank">
+                <i class="bi bi-linkedin"></i> <span class="visually-hidden">LinkedIn</span>
+            </a>
+            <a href="https://github.com/danilofernandes1987" class="btn btn-dark btn-sm" aria-label="GitHub" target="_blank">
+                <i class="bi bi-github"></i> <span class="visually-hidden">GitHub</span>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-8 order-md-1">
         <!--<p class="lead">
             <?php echo isset($welcomeMessage) ? htmlspecialchars($welcomeMessage) : 'Uma mensagem de boas-vindas simpática aqui!'; ?>
         </p>-->
@@ -84,24 +101,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="text-center">
-            <!-- A imagem agora aponta para um caminho estático novamente -->
-            <img src="/images/danilo.png" alt="Foto de Danilo Fernandes da Silva" class="img-fluid rounded-circle mb-3" style="width: 250px; height: 250px; object-fit: cover; border: 5px solid #eee;">
-
-            <!-- O nome usa a variável global $myName, que vem do seu config/app.php -->
-            <h4><?php echo htmlspecialchars($myName ?? 'Danilo F. Silva'); ?></h4>
-            <p class="text-muted">Técnico de TI | Entusiasta PHP</p>
-
-            <a href="https://www.linkedin.com/in/danilofernandessilva/" class="btn btn-primary btn-sm" aria-label="LinkedIn" target="_blank">
-                <i class="bi bi-linkedin"></i> <span class="visually-hidden">LinkedIn</span>
-            </a>
-            <a href="https://github.com/danilofernandes1987" class="btn btn-dark btn-sm" aria-label="GitHub" target="_blank">
-                <i class="bi bi-github"></i> <span class="visually-hidden">GitHub</span>
-            </a>
         </div>
     </div>
 </div>

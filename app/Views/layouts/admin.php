@@ -44,10 +44,16 @@
                             Posts
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" target="_blank"
+                            href="/">
+                            Site Principal
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- Dropdown de usuário -->
-                <?php $photoSrc = (!empty($user['photo'])) ? '/uploads/images/' . htmlspecialchars($user['photo']) : '/images/placeholder-profile.png'; ?>
+                <?php $photoSrc = (!empty($_SESSION['admin_photo'])) ? '/uploads/images/' . htmlspecialchars($_SESSION['admin_photo']) : '/images/placeholder-profile.png'; ?>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link p-0" href="#" role="button"
@@ -103,7 +109,10 @@
             <p>&copy; <?php echo date('Y'); ?> Painel Administrativo</p>
         </div>
     </footer>
+    <!-- Carregamento dos Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Carrega a biblioteca do TinyMCE da CDN -->
+    <script src="https://cdn.tiny.cloud/1/5037jfqsjqwoqlp4q4lrwa8n0ehwfxypfz9crmb3fl5oiyo0/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="/js/admin_scripts.js"></script>
 </body>
 

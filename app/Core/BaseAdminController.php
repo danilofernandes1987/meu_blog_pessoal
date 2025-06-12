@@ -52,7 +52,14 @@ class BaseAdminController extends BaseController
     {
         // Verifica se um arquivo foi enviado e se não houve erros no upload
         if (isset($fileInput) && $fileInput['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/images/';
+            $uploadDir = public_path('uploads/images/');
+
+            // Certifique-se de que o diretório de upload existe
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0775, true);
+            }
+
+
             $maxFileSize = 2 * 1024 * 1024; // 2 MB
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 

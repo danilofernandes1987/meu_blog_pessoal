@@ -9,7 +9,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Prism.js CSS (Tema "Okaidia") - ADICIONADO -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="/css/style.css">
+    <script>
+        function loadGoogleAnalytics() {
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-';
+            document.head.appendChild(gaScript);
+
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', 'G-');
+            console.log("Google Analytics carregado após consentimento.");
+        }
+    </script>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -47,11 +67,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/posts">Posts</a>
                     </li>
-                    <!-- Se não for mais necessário, pode remover o link comentado abaixo:
-        <li class="nav-item">
-          <a class="nav-link" href="/contato">Contato</a>
-        </li>
-        -->
                 </ul>
             </div>
         </div>
@@ -62,6 +77,18 @@
         <?php echo $contentForLayout; ?>
     </main>
 
+    <!-- BANNER DE CONSENTIMENTO DE COOKIES -->
+    <div id="cookie-consent-banner" class="cookie-consent-banner">
+        <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <p class="mb-2 mb-md-0">
+                Este site utiliza cookies para garantir a melhor experiência de navegação e para análise de tráfego. Ao continuar, você concorda com o uso de cookies.
+                <!-- No futuro, você pode criar uma página de Política de Privacidade e linkar aqui -->
+                <!-- <a href="/politica-de-privacidade">Saiba mais</a> -->
+            </p>
+            <button id="accept-cookie-btn" class="btn btn-primary btn-sm">Aceitar</button>
+        </div>
+    </div>
+
     <footer class="site-footer bg-light text-center py-3 mt-auto">
         <div class="container">
             <p>&copy; <?php echo date('Y'); ?> <?php echo isset($myName) ? htmlspecialchars($myName) : 'Seu Nome'; ?>. Todos os direitos reservados.</p>
@@ -70,6 +97,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+    <!-- Prism.js JS Core - ADICIONADO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <!-- Carrega automaticamente as linguagens mais comuns - ADICIONADO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <!-- Nosso novo script de gerenciamento de cookies -->
+    <script src="/js/cookie-consent.js"></script>
 </body>
 
 </html>
