@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Admin'; ?> - <?php echo htmlspecialchars($siteName ?? ''); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -43,6 +44,9 @@
                             href="/admin/posts">
                             Posts
                         </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/homepage') === 0) ? 'active' : ''; ?>" href="/admin/homepage">Página Inicial</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" target="_blank"
