@@ -49,6 +49,9 @@
                         <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/homepage') === 0) ? 'active' : ''; ?>" href="/admin/homepage">Página Inicial</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/curriculo') === 0) ? 'active' : ''; ?>" href="/admin/curriculo">Currículo</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" target="_blank"
                             href="/">
                             Site Principal

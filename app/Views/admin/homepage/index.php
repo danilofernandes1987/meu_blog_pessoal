@@ -112,9 +112,38 @@
     </div>
 </div>
 
-<!-- Modal para Adicionar Nova Skill (existente) -->
+<!-- Modal para Adicionar Nova Skill -->
 <div class="modal fade" id="addSkillModal" tabindex="-1" aria-labelledby="addSkillModalLabel" aria-hidden="true">
-    <!-- ... seu código do modal de adicionar ... -->
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addSkillModalLabel">Adicionar Nova Soft Skill</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="/admin/homepage/storeSkill">
+        <div class="modal-body">
+            <?php echo csrfInput(); ?>
+            <div class="mb-3">
+                <label for="icon_class" class="form-label">Classe do Ícone Bootstrap</label>
+                <input type="text" class="form-control" id="icon_class" name="icon_class" placeholder="ex: bi bi-people-fill text-primary" required>
+                <div class="form-text">Encontre ícones em <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a>.</div>
+            </div>
+            <div class="mb-3">
+                <label for="title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descrição</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Skill</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- Modal para Editar Skill (NOVO) -->

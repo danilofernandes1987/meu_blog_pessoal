@@ -59,7 +59,7 @@
                         <a class="nav-link" href="/">Início</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/home/curriculo">Currículo</a>
+                        <a class="nav-link" href="/curriculo">Currículo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/contact">Contato</a>
