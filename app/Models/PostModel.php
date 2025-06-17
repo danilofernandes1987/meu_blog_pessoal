@@ -216,7 +216,7 @@ class PostModel
             return false;
         }
     }
-    
+
     /**
      * Exclui um post do banco de dados pelo seu ID.
      * @param int $id ID do post a ser excluído.
@@ -233,6 +233,60 @@ class PostModel
             // error_log("Erro ao excluir post ID '$id': " . $e->getMessage());
             // die("Erro ao excluir post (PDOException): " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Busca posts que correspondem a um termo de pesquisa no título ou conteúdo.
+     * @param string $term O termo de busca.
+     * @param int $limit Número de resultados por página.
+     * @param int $offset Deslocamento para paginação.
+     * @return array Lista de posts encontrados.
+     */
+    public function search(string $term, int $limit, int $offset)
+    {
+        try {
+            $searchTerm = '%' . $term . '%';
+
+            $sql = "SELECT id, title, slug, LEFT(content, 250) AS excerpt, created_at
+                    FROM posts
+                    WHERE status = 'published' AND (title LIKE ? OR content LIKE ?)
+                    ORDER BY created_at DESC
+                    LIMIT ? OFFSET ?";
+
+            $stmt = $this->db->prepare($sql);
+
+            // Passa os valores diretamente no execute() na ordem dos '?'
+            $stmt->execute([$searchTerm, $searchTerm, $limit, $offset]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            // Para depuração no servidor, você pode descomentar esta linha temporariamente:
+            // error_log('Search Error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Conta o total de resultados para um termo de pesquisa.
+     * @param string $term O termo de busca.
+     * @return int O número total de posts encontrados.
+     */
+    public function countSearchResults(string $term): int
+    {
+        try {
+            $searchTerm = '%' . $term . '%';
+            $sql = "SELECT COUNT(*) FROM posts WHERE status = 'published' AND (title LIKE ? OR content LIKE ?)";
+
+            $stmt = $this->db->prepare($sql);
+
+            // Passa os valores diretamente no execute()
+            $stmt->execute([$searchTerm, $searchTerm]);
+
+            return (int) $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            // error_log('Count Search Error: ' . $e->getMessage());
+            return 0;
         }
     }
 }

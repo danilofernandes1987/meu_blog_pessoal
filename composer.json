@@ -14,7 +14,8 @@
         },
         "files": [
             "app/Core/flash_helpers.php",
-            "app/Core/path_helpers.php"
+            "app/Core/path_helpers.php",
+            "app/Core/date_helpers.php"
         ]
     }
 }

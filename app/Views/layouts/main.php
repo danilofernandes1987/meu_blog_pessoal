@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
- 
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="/css/style.css">
@@ -68,6 +68,13 @@
                         <a class="nav-link" href="/posts">Posts</a>
                     </li>
                 </ul>
+                 <!-- Formulário de Busca com Ícone Interno -->
+                 <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" action="/search" method="GET">
+                    <div style="position: relative;">
+                        <input type="search" name="q" class="form-control form-control-dark text-bg-dark" placeholder="Buscar posts..." aria-label="Search" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" style="padding-right: 2.5rem;">
+                        <i class="bi bi-search" style="position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); pointer-events: none; color: #ced4da;"></i>
+                    </div>
+                </form>
             </div>
         </div>
     </nav>
