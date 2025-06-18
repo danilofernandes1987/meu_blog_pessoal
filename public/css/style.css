@@ -140,6 +140,20 @@ h1 {
     /* Cinza do Bootstrap */
 }
 
+/* Container para o conteúdo principal de um post ou página */
+.post-content {
+    line-height: 1.7; /* Melhora a legibilidade */
+}
+
+/* --- SOLUÇÃO PARA IMAGENS RESPONSIVAS DENTRO DOS POSTS --- */
+.post-content img {
+    max-width: 100%; /* Garante que a imagem nunca seja mais larga que o seu contêiner */
+    height: auto;    /* Mantém a proporção da imagem ao redimensionar a largura */
+    border-radius: 0.25rem; /* Adiciona cantos arredondados, como em outros elementos Bootstrap */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
 /* Em telas pequenas, diminui o espaçamento */
 @media (max-width: 767px) {
     .timeline {

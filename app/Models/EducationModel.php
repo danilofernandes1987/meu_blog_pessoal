@@ -97,4 +97,18 @@ class EducationModel
             return false;
         }
     }
+
+    /**
+     * Conta todas as formações acadêmicas.
+     * @return int
+     */
+    public function countAll(): int
+    {
+        try {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM " . $this->table);
+            return (int) $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            return 0;
+        }
+    }
 }

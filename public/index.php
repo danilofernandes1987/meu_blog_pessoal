@@ -6,6 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Define o fuso horário padrão para toda a aplicação
+date_default_timezone_set('America/Sao_Paulo');
+
 /**
  * Define a constante PUBLIC_PATH com o caminho absoluto para este diretório.
  * __DIR__ retorna o caminho do diretório onde este arquivo (index.php) está.

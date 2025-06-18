@@ -2,9 +2,10 @@
 // app/Controllers/Admin/PostsController.php
 namespace App\Controllers\Admin;
 
-use App\Core\BaseAdminController; // Herda do nosso guardião de admin
+use App\Core\BaseAdminController;
 use App\Models\PostModel;
 use App\Controllers\ErrorController;
+use App\Core\Validator;
 
 class PostsController extends BaseAdminController
 {
@@ -12,7 +13,7 @@ class PostsController extends BaseAdminController
 
     public function __construct()
     {
-        parent::__construct(); // Executa o construtor do BaseAdminController (verificação de auth)
+        parent::__construct();
         $this->postModel = new PostModel();
     }
 
@@ -21,177 +22,141 @@ class PostsController extends BaseAdminController
      */
     public function index(): void
     {
-        $posts = $this->postModel->getAllForAdmin(); // Usa o método do model
+        $posts = $this->postModel->getAllForAdmin();
 
         $data = [
-            'pageTitle'    => 'Gerenciar Posts',
-            'contentTitle' => 'Todos os Posts do Blog',
-            'posts'        => $posts,
-            'siteName'     => $this->siteConfig['siteName'] ?? 'Painel Admin', // Para o layout admin
-            'adminUsername' => $_SESSION['admin_username'] ?? '' // Para o layout admin
+            'pageTitle'     => 'Gerenciar Posts',
+            'contentTitle'  => 'Todos os Posts do Blog',
+            'posts'         => $posts,
+            'siteName'      => $this->siteConfig['siteName'] ?? 'Painel Admin',
+            'adminUsername' => $_SESSION['admin_username'] ?? ''
         ];
 
-        // Renderiza a view dentro do layout administrativo
         $this->view('admin.posts.index', $data, 'layouts.admin');
     }
 
-    // create(), store(), edit(), update(), delete()
-
     /**
      * Exibe o formulário para criar um novo post.
-     * Acessado via GET /admin/posts/create
      */
     public function create(): void
     {
         $data = [
-            'pageTitle' => 'Criar Novo Post',
-            'contentTitle' => 'Adicionar Novo Post ao Blog',
-            'siteName'     => $this->siteConfig['siteName'] ?? 'Painel Admin',
+            'pageTitle'     => 'Criar Novo Post',
+            'contentTitle'  => 'Adicionar Novo Post ao Blog',
+            'siteName'      => $this->siteConfig['siteName'] ?? 'Painel Admin',
             'adminUsername' => $_SESSION['admin_username'] ?? '',
-            'errors' => $_SESSION['errors'] ?? [], // Para exibir erros de validação
-            'old_input' => $_SESSION['old_input'] ?? [] // Para repopular o formulário
+            'errors'        => $_SESSION['errors'] ?? [],
+            'old_input'     => $_SESSION['old_input'] ?? []
         ];
-        unset($_SESSION['errors']); // Limpa os erros da sessão após exibi-los
-        unset($_SESSION['old_input']); // Limpa o input antigo da sessão
+        unset($_SESSION['errors']);
+        unset($_SESSION['old_input']);
 
         $this->view('admin.posts.create', $data, 'layouts.admin');
     }
 
     /**
      * Armazena um novo post no banco de dados.
-     * Acessado via POST /admin/posts/store (ou /admin/posts/create se preferir)
      */
     public function store(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->validatePostRequest(); // Valida CSRF e método POST
+            $this->validatePostRequest();
 
-            // Lógica de upload da imagem
+            // --- LÓGICA DE VALIDAÇÃO CENTRALIZADA ---
+            $validator = new Validator($_POST);
+            $validator->validate([
+                'title'   => 'required|min:3',
+                'slug'    => 'required|slug',
+                'content' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                $_SESSION['errors'] = $validator->errors();
+                $_SESSION['old_input'] = $_POST;
+                header('Location: /admin/posts/create');
+                exit;
+            }
+            // --- FIM DA VALIDAÇÃO ---
+
             $newImageName = $this->handleImageUpload($_FILES['featured_image'] ?? null);
-            if ($newImageName === false) { // Ocorreu um erro de upload
+            if ($newImageName === false) {
+                setFlashMessage('post_feedback', $_SESSION['errors']['photo'] ?? 'Erro no upload da foto.', 'danger');
                 $_SESSION['old_input'] = $_POST;
                 header('Location: /admin/posts/create');
                 exit;
             }
-
-            echo $newImageName;
-
-
-            // Validação básica (em um app real, use uma biblioteca de validação ou regras mais robustas)
-            $errors = [];
-            $title = trim($_POST['title'] ?? '');
-            $slug = trim($_POST['slug'] ?? '');
-            $content = trim($_POST['content'] ?? '');
-            $status = $_POST['status'] ?? 'draft'; // Default para draft se não enviado
-
-            if (empty($title)) {
-                $errors['title'] = 'O título é obrigatório.';
-            }
-            if (empty($slug)) {
-                $errors['slug'] = 'O slug é obrigatório.';
-            } elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) {
-                $errors['slug'] = 'O slug deve conter apenas letras minúsculas, números e hífens.';
-            }
-            if (empty($content)) {
-                $errors['content'] = 'O conteúdo é obrigatório.';
-            }
-            if (!in_array($status, ['published', 'draft'])) {
-                $status = 'draft'; // Força um valor válido
-            }
-
-            if (!empty($errors)) {
-                // Guarda os erros e o input antigo na sessão para exibir no formulário
-                $_SESSION['errors'] = $errors;
-                $_SESSION['old_input'] = $_POST;
-                // Se o upload falhou e a validação de outros campos também, os erros de imagem já estão na sessão
-                $_SESSION['errors'] = array_merge($_SESSION['errors'] ?? [], $errors);
-                // Usando flash message para erro de validação geral se necessário, embora os erros de campo sejam mais específicos
-                // setFlashMessage('post_form_error', 'Por favor, corrija os erros no formulário.', 'danger');
-                header('Location: /admin/posts/create'); // Redireciona de volta para o formulário
-                exit;
-            }
-
-            // Se não houver erros, tenta criar o post
+    
+            $status = $_POST['status'] ?? 'draft';
+    
             $dataToSave = [
-                'title' => $title,
-                'slug' => $slug,
-                'content' => $content,
-                'status' => $status,
+                'title'          => $_POST['title'],
+                'slug'           => $_POST['slug'],
+                'content'        => $_POST['content'],
+                'status'         => $status,
                 'featured_image' => $newImageName,
-                'author_id' => $_SESSION['admin_user_id'] ?? null // Pega o ID do admin logado
+                'published_at'   => ($status === 'published') ? date('Y-m-d H:i:s') : null,
+                'author_id'      => $_SESSION['admin_user_id'] ?? null
             ];
-
-            $postId = $this->postModel->create($dataToSave);
-
-            if ($postId) {
-                // Adicionar mensagem de sucesso (flash message) seria ideal aqui
+    
+            if ($this->postModel->create($dataToSave)) {
                 setFlashMessage('post_feedback', 'Post criado com sucesso!', 'success');
-                header('Location: /admin/posts'); // Redireciona para a lista de posts
-                exit;
             } else {
-                // Erro ao salvar no banco
-                // A view create já lida com erros de campo via $_SESSION['errors']
-                // Mas podemos adicionar um erro geral se a criação falhar por outro motivo (ex: slug duplicado não pego antes)
-                setFlashMessage('post_feedback', 'Erro ao criar o post. Verifique se o slug já existe ou tente novamente.', 'danger');
-                // Manter os dados antigos para repopular o formulário
-                $_SESSION['old_input'] = $_POST;
+                setFlashMessage('post_feedback', 'Erro ao criar o post. Verifique se o slug já existe.', 'danger');
+                $_SESSION['old_input'] = $_POST; // Guarda o input para repopular
                 header('Location: /admin/posts/create');
                 exit;
             }
-        } else {
-            // Se não for POST, redireciona ou mostra erro
-            header('Location: /admin/posts/create');
+    
+            header('Location: /admin/posts');
             exit;
         }
+
+        header('Location: /admin/posts/create');
+        exit;
     }
 
     /**
      * Exibe o formulário para editar um post existente.
-     * Acessado via GET /admin/posts/edit/{id}
      */
     public function edit(int $id): void
     {
         $post = $this->postModel->findById($id);
 
         if (!$post) {
-            $errorController = new ErrorController();
-            $errorController->show404("Post com ID '$id' não encontrado para edição.");
+            (new ErrorController())->show404("Post com ID '$id' não encontrado para edição.");
             return;
         }
 
         $data = [
-            'pageTitle'    => 'Editar Post',
-            'contentTitle' => 'Editando Post: ' . htmlspecialchars($post['title']),
-            'post'         => $post, // Passa os dados do post para preencher o formulário
-            'siteName'     => $this->siteConfig['siteName'] ?? 'Painel Admin',
+            'pageTitle'     => 'Editar Post',
+            'contentTitle'  => 'Editando Post: ' . htmlspecialchars($post['title']),
+            'post'          => $post,
+            'siteName'      => $this->siteConfig['siteName'] ?? 'Painel Admin',
             'adminUsername' => $_SESSION['admin_username'] ?? '',
-            'errors'       => $_SESSION['errors'] ?? [],
-            'old_input'    => $_SESSION['old_input'] ?? [] // Em caso de erro de validação no update
+            'errors'        => $_SESSION['errors'] ?? [],
+            'old_input'     => $_SESSION['old_input'] ?? []
         ];
-        unset($_SESSION['errors']);
-        unset($_SESSION['old_input']);
+        unset($_SESSION['errors'], $_SESSION['old_input']);
 
         $this->view('admin.posts.edit', $data, 'layouts.admin');
     }
 
     /**
      * Atualiza um post existente no banco de dados.
-     * Acessado via POST /admin/posts/update/{id}
      */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->validatePostRequest();
+
             $postOriginal = $this->postModel->findById($id);
             if (!$postOriginal) {
-                $errorController = new ErrorController();
-                $errorController->show404("Post com ID '$id' não encontrado para atualização.");
+                (new ErrorController())->show404("Post com ID '$id' não encontrado para atualização.");
                 return;
             }
 
-            // Lógica de upload da nova imagem (passando o nome da antiga para ser deletada)
             $newImageName = $this->handleImageUpload($_FILES['featured_image'] ?? null, $postOriginal['featured_image']);
-            if ($newImageName === false) { // Ocorreu um erro de upload
+            if ($newImageName === false) {
                 $_SESSION['old_input'] = $_POST;
                 header('Location: /admin/posts/edit/' . $id);
                 exit;
@@ -199,33 +164,19 @@ class PostsController extends BaseAdminController
 
             $errors = [];
             $title = trim($_POST['title'] ?? '');
-            // Se o slug puder ser alterado, valide-o. Se não, use o original ou gere se o título mudou.
-            // Por simplicidade, vamos permitir alteração do slug com validação.
             $slug = trim($_POST['slug'] ?? '');
             $content = trim($_POST['content'] ?? '');
             $status = $_POST['status'] ?? 'draft';
 
-            if (empty($title)) {
-                $errors['title'] = 'O título é obrigatório.';
-            }
-            if (empty($slug)) {
-                $errors['slug'] = 'O slug é obrigatório.';
-            } elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) {
-                $errors['slug'] = 'O slug deve conter apenas letras minúsculas, números e hífens.';
-            }
-            if (empty($content)) {
-                $errors['content'] = 'O conteúdo é obrigatório.';
-            }
-            if (!in_array($status, ['published', 'draft'])) {
-                $status = 'draft';
-            }
+            if (empty($title)) $errors['title'] = 'O título é obrigatório.';
+            if (empty($slug)) $errors['slug'] = 'O slug é obrigatório.';
+            elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) $errors['slug'] = 'O slug deve conter apenas letras minúsculas, números e hífens.';
+            if (empty($content)) $errors['content'] = 'O conteúdo é obrigatório.';
+            if (!in_array($status, ['published', 'draft'])) $status = 'draft';
 
             if (!empty($errors)) {
-                $_SESSION['errors'] = $errors;
-                // Para repopular o formulário de edição, usamos os dados que vieram do POST
-                // mas mantendo o ID original do post
+                $_SESSION['errors'] = array_merge($_SESSION['errors'] ?? [], $errors);
                 $_SESSION['old_input'] = $_POST;
-                $_SESSION['old_input']['id'] = $id; // Garante que o ID seja mantido
                 header('Location: /admin/posts/edit/' . $id);
                 exit;
             }
@@ -236,60 +187,56 @@ class PostsController extends BaseAdminController
                 'content' => $content,
                 'status' => $status,
                 'featured_image' => ($newImageName !== null) ? $newImageName : $postOriginal['featured_image'],
-                // author_id geralmente não muda na edição, ou seria uma funcionalidade separada.
-                // Se você quiser permitir a mudança de autor, adicione aqui:
-                // 'author_id' => $_POST['author_id'] ?? $postOriginal['author_id'],
             ];
+
+            if ($status === 'published' && $postOriginal['status'] !== 'published') {
+                $dataToUpdate['published_at'] = date('Y-m-d H:i:s');
+            } else {
+                $dataToUpdate['published_at'] = $postOriginal['published_at'];
+            }
 
             if ($this->postModel->update($id, $dataToUpdate)) {
                 setFlashMessage('post_feedback', 'Post atualizado com sucesso!', 'success');
-                header('Location: /admin/posts');
-                exit;
             } else {
-                setFlashMessage('post_feedback', 'Erro ao atualizar o post. Verifique se o novo slug já existe ou tente novamente.', 'danger');
+                setFlashMessage('post_feedback', 'Erro ao atualizar o post. Verifique se o novo slug já existe.', 'danger');
                 $_SESSION['old_input'] = $_POST;
-                $_SESSION['old_input']['id'] = $id;
                 header('Location: /admin/posts/edit/' . $id);
                 exit;
             }
-        } else {
-            // Se não for POST, redireciona para a lista ou para o formulário de edição
-            header('Location: /admin/posts/edit/' . $id);
+
+            header('Location: /admin/posts');
             exit;
         }
+
+        header('Location: /admin/posts/edit/' . $id);
+        exit;
     }
 
     /**
      * Exclui um post.
-     * Acessado via GET /admin/posts/delete/{id} (com confirmação JS no link)
      */
     public function delete(int $id): void
     {
-        // Poderia adicionar uma verificação extra aqui para garantir que o post existe antes de tentar excluir,
-        // mas o PostModel::delete() já retornará false se o ID não existir e nada acontecerá.
-        // Para uma mensagem de feedback mais específica, a verificação seria útil.
-
         $post = $this->postModel->findById($id);
 
         if (!$post) {
-            setFlashMessage('post_feedback', "Post com ID '$id' não encontrado para exclusão.", 'warning'); // << AQUI
+            setFlashMessage('post_feedback', "Post com ID '$id' não encontrado para exclusão.", 'warning');
             header('Location: /admin/posts');
             exit;
         }
 
         if ($this->postModel->delete($id)) {
-            // Se o post foi deletado do banco, também deleta a imagem associada
             if (!empty($post['featured_image'])) {
-                $imagePath = __DIR__ . '/../../../public/uploads/images/' . $post['featured_image'];
+                $imagePath = public_path('uploads/images/' . $post['featured_image']);
                 if (file_exists($imagePath)) {
                     unlink($imagePath);
                 }
             }
-            setFlashMessage('post_feedback', 'Post excluído com sucesso!', 'success'); // << AQUI
+            setFlashMessage('post_feedback', 'Post excluído com sucesso!', 'success');
         } else {
-            setFlashMessage('post_feedback', 'Erro ao excluir o post. Tente novamente.', 'danger'); // << AQUI
+            setFlashMessage('post_feedback', 'Erro ao excluir o post. Tente novamente.', 'danger');
         }
-        // Redireciona de volta para a lista de posts em ambos os casos (sucesso ou falha no delete)
+
         header('Location: /admin/posts');
         exit;
     }

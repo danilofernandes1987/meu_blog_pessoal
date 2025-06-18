@@ -1,22 +1,40 @@
 <?php
 // app/Controllers/Admin/DashboardController.php
-namespace App\Controllers\Admin; 
+namespace App\Controllers\Admin;
 
 use App\Core\BaseAdminController;
+use App\Models\PostModel;
+use App\Models\WorkExperienceModel;
+use App\Models\EducationModel;
+use App\Models\CourseModel;
 
-class DashboardController extends BaseAdminController {
+class DashboardController extends BaseAdminController
+{
 
     // O construtor do BaseAdminController já cuida da verificação de login.
 
-    public function index(): void {
+    public function index(): void
+    {
+        // Instancia todos os models necessários
+        $postModel = new PostModel();
+        $experienceModel = new WorkExperienceModel();
+        $educationModel = new EducationModel();
+        $courseModel = new CourseModel();
+
+        // Busca os 5 posts mais recentes para a lista de "Atividade Recente"
+        $recentPosts = $postModel->findAll(5, 0);
+
+        // Prepara os dados para a view
         $data = [
-            'pageTitle' => 'Painel Administrativo',
-            'contentTitle' => 'Bem-vindo(a) ao Painel, ' . htmlspecialchars($_SESSION['admin_name'] ?? 'Admin') . '!',
-            'adminUsername' => $_SESSION['admin_username'] ?? ''
+            'pageTitle'         => 'Painel Administrativo',
+            'contentTitle'      => 'Dashboard',
+            'totalPosts'        => $postModel->countAll(),
+            'totalExperiences'  => $experienceModel->countAll(),
+            'totalEducations'   => $educationModel->countAll(),
+            'totalCourses'      => $courseModel->countAll(),
+            'recentPosts'       => $recentPosts
         ];
 
-        // Usa um novo layout específico para a área administrativa
         $this->view('admin.dashboard.index', $data, 'layouts.admin');
     }
 }
-?>
