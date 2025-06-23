@@ -36,7 +36,7 @@ $statusValue = $old_input['status'] ?? $post['status'] ?? 'draft';
     </div>
     <div class="mb-3">
         <label for="title" class="form-label">Título do Post</label>
-        <input type="text" class="form-control <?php echo isset($errors['title']) ? 'is-invalid' : ''; ?>" id="title" name="title" value="<?php echo htmlspecialchars($titleValue); ?>" required>
+        <input type="text" class="form-control <?php echo isset($errors['title']) ? 'is-invalid' : ''; ?>" id="title" name="title" value="<?php echo htmlspecialchars($titleValue); ?>">
         <?php if (isset($errors['title'])): ?>
             <div class="invalid-feedback"><?php echo htmlspecialchars($errors['title']); ?></div>
         <?php endif; ?>
@@ -44,7 +44,7 @@ $statusValue = $old_input['status'] ?? $post['status'] ?? 'draft';
 
     <div class="mb-3">
         <label for="slug" class="form-label">Slug (URL amigável)</label>
-        <input type="text" class="form-control <?php echo isset($errors['slug']) ? 'is-invalid' : ''; ?>" id="slug" name="slug" value="<?php echo htmlspecialchars($slugValue); ?>" placeholder="ex: meu-post-editado" required>
+        <input type="text" class="form-control <?php echo isset($errors['slug']) ? 'is-invalid' : ''; ?>" id="slug" name="slug" value="<?php echo htmlspecialchars($slugValue); ?>" placeholder="ex: meu-post-editado">
         <div class="form-text">Use apenas letras minúsculas, números e hífens. Ex: "meu-post-legal".</div>
         <?php if (isset($errors['slug'])): ?>
             <div class="invalid-feedback"><?php echo htmlspecialchars($errors['slug']); ?></div>

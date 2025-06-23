@@ -62,7 +62,7 @@ class PostsController extends BaseAdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->validatePostRequest();
 
-            // --- LÓGICA DE VALIDAÇÃO CENTRALIZADA ---
+            // --- VALIDAÇÃO CENTRALIZADA ---
             $validator = new Validator($_POST);
             $validator->validate([
                 'title'   => 'required|min:3',
@@ -85,9 +85,9 @@ class PostsController extends BaseAdminController
                 header('Location: /admin/posts/create');
                 exit;
             }
-    
+
             $status = $_POST['status'] ?? 'draft';
-    
+
             $dataToSave = [
                 'title'          => $_POST['title'],
                 'slug'           => $_POST['slug'],
@@ -97,7 +97,7 @@ class PostsController extends BaseAdminController
                 'published_at'   => ($status === 'published') ? date('Y-m-d H:i:s') : null,
                 'author_id'      => $_SESSION['admin_user_id'] ?? null
             ];
-    
+
             if ($this->postModel->create($dataToSave)) {
                 setFlashMessage('post_feedback', 'Post criado com sucesso!', 'success');
             } else {
@@ -106,7 +106,7 @@ class PostsController extends BaseAdminController
                 header('Location: /admin/posts/create');
                 exit;
             }
-    
+
             header('Location: /admin/posts');
             exit;
         }
@@ -155,31 +155,32 @@ class PostsController extends BaseAdminController
                 return;
             }
 
+            // --- VALIDAÇÃO CENTRALIZADA ---
+            $validator = new Validator($_POST);
+            $validator->validate([
+                'title'   => 'required|min:3',
+                'slug'    => 'required|slug',
+                'content' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                $_SESSION['errors'] = $validator->errors();
+                $_SESSION['old_input'] = $_POST; // Guarda o input com erro para repopular o form
+                header('Location: /admin/posts/edit/' . $id);
+                exit;
+            }
+            // --- FIM DA VALIDAÇÃO ---
+
             $newImageName = $this->handleImageUpload($_FILES['featured_image'] ?? null, $postOriginal['featured_image']);
             if ($newImageName === false) {
                 $_SESSION['old_input'] = $_POST;
                 header('Location: /admin/posts/edit/' . $id);
                 exit;
             }
-
-            $errors = [];
             $title = trim($_POST['title'] ?? '');
             $slug = trim($_POST['slug'] ?? '');
             $content = trim($_POST['content'] ?? '');
             $status = $_POST['status'] ?? 'draft';
-
-            if (empty($title)) $errors['title'] = 'O título é obrigatório.';
-            if (empty($slug)) $errors['slug'] = 'O slug é obrigatório.';
-            elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) $errors['slug'] = 'O slug deve conter apenas letras minúsculas, números e hífens.';
-            if (empty($content)) $errors['content'] = 'O conteúdo é obrigatório.';
-            if (!in_array($status, ['published', 'draft'])) $status = 'draft';
-
-            if (!empty($errors)) {
-                $_SESSION['errors'] = array_merge($_SESSION['errors'] ?? [], $errors);
-                $_SESSION['old_input'] = $_POST;
-                header('Location: /admin/posts/edit/' . $id);
-                exit;
-            }
 
             $dataToUpdate = [
                 'title' => $title,
