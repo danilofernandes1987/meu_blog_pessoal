@@ -66,21 +66,21 @@ class Validator
     private function validateRequired($field, $value, $param)
     {
         if (empty(trim((string)$value))) {
-            $this->errors[$field] = "O campo {$field} é obrigatório.";
+            $this->errors[$field] = "Este campo é obrigatório.";
         }
     }
 
     private function validateEmail($field, $value, $param)
     {
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[$field] = "O campo {$field} deve ser um endereço de e-mail válido.";
+            $this->errors[$field] = "Este campo deve ser um endereço de e-mail válido.";
         }
     }
 
     private function validateMin($field, $value, $param)
     {
         if (strlen($value) < $param) {
-            $this->errors[$field] = "O campo {$field} deve ter no mínimo {$param} caracteres.";
+            $this->errors[$field] = "Este campo deve ter no mínimo {$param} caracteres.";
         }
     }
 
@@ -91,5 +91,9 @@ class Validator
         }
     }
 
-    // Você pode adicionar mais regras aqui (ex: max, numeric, matches, etc.)
+    private function validateNumber($field, $value, $param){
+        if (!is_numeric($value)){
+            $this->errors[$field] = "Este campo deve conter apenas números";
+        }
+    }
 }

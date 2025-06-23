@@ -169,26 +169,41 @@
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="job_title" class="form-label">Cargo</label>
-                        <input type="text" class="form-control" id="job_title" name="job_title" required>
+                        <input type="text" class="form-control <?php echo isset($errors['job_title']) ? 'is-invalid' : ''; ?>" id="job_title" name="job_title" value="<?php echo htmlspecialchars($old_input['job_title'] ?? ''); ?>" required>
+                        <?php if (isset($errors['job_title'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['job_title']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="company" class="form-label">Empresa / Instituição</label>
-                        <input type="text" class="form-control" id="company" name="company" required>
+                        <input type="text" class="form-control <?php echo isset($errors['company']) ? 'is-invalid' : ''; ?>" id="company" name="company" value="<?php echo htmlspecialchars($old_input['company'] ?? ''); ?>" required>
+                        <?php if (isset($errors['company'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['company']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="start_date" class="form-label">Data de Início</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            <input type="date" class="form-control <?php echo isset($errors['start_date']) ? 'is-invalid' : ''; ?>" id="start_date" name="start_date" value="<?php echo htmlspecialchars($old_input['start_date'] ?? ''); ?>" required>
+                            <?php if (isset($errors['start_date'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['start_date']); ?></div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="end_date" class="form-label">Data de Término</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date">
+                            <input type="date" class="form-control <?php echo isset($errors['end_date']) ? 'is-invalid' : ''; ?>" id="end_date" name="end_date" value="<?php echo htmlspecialchars($old_input['end_date'] ?? ''); ?>">
+                            <?php if (isset($errors['end_date'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['end_date']); ?></div>
+                            <?php endif; ?>
                             <div class="form-text">Deixe em branco se for o emprego atual.</div>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Descrição das Atividades</label>
-                        <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                        <textarea class="form-control <?php echo isset($errors['description']) ? 'is-invalid' : ''; ?>" id="description" name="description" rows="5"><?php echo htmlspecialchars($old_input['description'] ?? ''); ?></textarea>
+                        <?php if (isset($errors['description'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['description']); ?></div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -469,6 +484,50 @@
                 form.querySelector('#edit_completion_year').value = completionYear;
                 form.querySelector('#edit_workload_hours').value = workloadHours;
             });
+        }
+
+        const modalToOpen = '<?php echo $openModal ?? ''; ?>';
+
+        if (modalToOpen) {
+            const modalElement = document.querySelector(modalToOpen);
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+
+                // Se for um modal de edição, precisamos preenchê-lo com os dados antigos
+                if (modalToOpen.startsWith('#edit')) {
+                    // Recupera os dados do input antigo que o PHP guardou
+                    const oldInput = <?php echo json_encode($_SESSION['old_input'] ?? []); ?>;
+                    const editId = <?php echo json_encode($_SESSION['edit_id'] ?? null); ?>;
+                    unset($_SESSION['old_input'], $_SESSION['edit_id']);
+
+                    const form = modalElement.querySelector('form');
+                    if (form && oldInput) {
+                        // Atualiza a action do formulário para o ID correto
+                        if (editId) {
+                            const originalAction = form.getAttribute('action');
+                            // Substitui o final da action pelo ID correto, se necessário.
+                            // Esta parte pode precisar de ajuste dependendo da sua rota.
+                            // Exemplo: /admin/curriculo/updateExperience/
+                            let actionBase = originalAction.substring(0, originalAction.lastIndexOf('/') + 1);
+                            if (modalToOpen === '#editExperienceModal') actionBase = '/admin/curriculo/updateExperience/';
+                            if (modalToOpen === '#editEducationModal') actionBase = '/admin/curriculo/updateEducation/';
+                            if (modalToOpen === '#editCourseModal') actionBase = '/admin/curriculo/updateCourse/';
+
+                            form.action = actionBase + editId;
+                        }
+
+                        // Preenche cada campo do formulário com os valores antigos
+                        for (const key in oldInput) {
+                            const inputField = form.querySelector(`[name="${key}"]`);
+                            if (inputField) {
+                                inputField.value = oldInput[key];
+                            }
+                        }
+                    }
+                }
+
+                modal.show();
+            }
         }
     });
 </script>
