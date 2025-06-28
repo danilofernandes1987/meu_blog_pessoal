@@ -56,7 +56,7 @@
                     <div class="timeline-icon"><i class="bi bi-circle-fill"></i></div>
                     <p class="text-muted mb-1 text-mobile"><?php echo $course['completion_year']; ?></p>
                     <h5 class="fw-bold mb-1 text-mobile"><?php echo htmlspecialchars($course['course_name']); ?></h5>
-                    <p class="text-primary mb-2 text-mobile"><?php echo htmlspecialchars($course['institution']); ?></p>
+                    <p class="text-primary mb-2 text-mobile"><?php echo htmlspecialchars($course['course_institution']); ?></p>
                     <?php if (!empty($course['workload_hours'])): ?>
                         <small class="text-secondary d-block">Carga horária: <?php echo $course['workload_hours']; ?> horas</small>
                     <?php endif; ?>

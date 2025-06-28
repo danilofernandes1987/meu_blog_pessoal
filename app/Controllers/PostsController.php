@@ -4,9 +4,6 @@ namespace App\Controllers;
 
 use App\Core\BaseController; // Para usar o método view()
 use App\Models\PostModel;    // Nosso model de posts
-// Poderíamos usar também o ErrorController se quiséssemos ter um método específico aqui,
-// mas o Router já deve estar tratando controllers/métodos não encontrados.
-// Se um post específico não for encontrado, podemos lidar com isso aqui.
 
 class PostsController extends BaseController {
     private PostModel $postModel;

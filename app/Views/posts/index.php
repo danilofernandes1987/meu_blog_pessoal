@@ -37,7 +37,7 @@
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            Publicado em: <?php echo date('d/m/Y', strtotime($post['created_at'])); ?>
+                            Publicado em: <?php echo date('d/m/Y', strtotime($post['published_at'])); ?>
                         </small>
                     </div>
                 </div>

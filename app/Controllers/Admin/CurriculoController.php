@@ -37,9 +37,10 @@ class CurriculoController extends BaseAdminController
             'courses'      => $this->courseModel->findAll(),
             'errors'       => $_SESSION['errors'] ?? [],
             'old_input'    => $_SESSION['old_input'] ?? [],
-            'openModal'    => $_SESSION['open_modal'] ?? null
+            'openModal'    => $_SESSION['open_modal'] ?? null,
+            'edit_id'      => $_SESSION['edit_id'] ?? null,
         ];
-        unset($_SESSION['errors'], $_SESSION['old_input'], $_SESSION['open_modal']);
+        unset($_SESSION['errors'], $_SESSION['old_input'], $_SESSION['open_modal'], $_SESSION['edit_id']);
 
         $this->view('admin.curriculo.index', $data, 'layouts.admin');
     }
@@ -71,16 +72,7 @@ class CurriculoController extends BaseAdminController
         }
         // --- FIM DA VALIDAÇÃO ---
 
-        $data = [
-            'job_title'   => $_POST['job_title'] ?? '',
-            'company'     => $_POST['company'] ?? '',
-            'start_date'  => $_POST['start_date'] ?? '',
-            'end_date'    => $_POST['end_date'] ?? '',
-            'description' => $_POST['description'] ?? ''
-        ];
-
-
-        if ($this->experienceModel->create($data)) {
+        if ($this->experienceModel->create($_POST)) {
             setFlashMessage('curriculo_feedback', 'Nova experiência profissional adicionada com sucesso!', 'success');
         } else {
             setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao adicionar a experiência.', 'danger');
@@ -104,28 +96,20 @@ class CurriculoController extends BaseAdminController
             'company'    => 'required|min:3',
             'content' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required',
             'description' => 'required|min:30',
         ]);
 
         if ($validator->fails()) {
             $_SESSION['errors'] = $validator->errors();
             $_SESSION['old_input'] = $_POST;
+            $_SESSION['open_modal'] = '#editExperienceModal';
+            $_SESSION['edit_id'] = $id;
             header('Location: /admin/curriculo');
             exit;
         }
-        // --- FIM DA VALIDAÇÃO ---
-
-        $data = [
-            'job_title'   => $_POST['job_title'] ?? '',
-            'company'     => $_POST['company'] ?? '',
-            'start_date'  => $_POST['start_date'] ?? '',
-            'end_date'    => $_POST['end_date'] ?? '',
-            'description' => $_POST['description'] ?? ''
-        ];
 
 
-        if ($this->experienceModel->update($id, $data)) {
+        if ($this->experienceModel->update($id, $_POST)) {
             setFlashMessage('curriculo_feedback', 'Experiência atualizada com sucesso!', 'success');
         } else {
             setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao atualizar a experiência.', 'danger');
@@ -160,28 +144,23 @@ class CurriculoController extends BaseAdminController
         // --- VALIDAÇÃO CENTRALIZADA ---
         $validator = new Validator($_POST);
         $validator->validate([
-            'degree'   => 'required|min:3|number',
+            'degree'   => 'required|min:4',
             'institution'    => 'required|min:3',
-            'start_year' => 'required',
-            'end_year' => 'required',
+            'start_year' => 'required|number',
+            'end_year' => 'number',
         ]);
 
         if ($validator->fails()) {
             $_SESSION['errors'] = $validator->errors();
             $_SESSION['old_input'] = $_POST;
+            $_SESSION['open_modal'] = '#addEducationModal';
             header('Location: /admin/curriculo');
             exit;
         }
         // --- FIM DA VALIDAÇÃO ---
 
-        $data = [
-            'degree'      => $_POST['degree'] ?? '',
-            'institution' => $_POST['institution'] ?? '',
-            'start_year'  => $_POST['start_year'] ?? '',
-            'end_year'    => $_POST['end_year'] ?? '',
-        ];
 
-        if ($this->educationModel->create($data)) {
+        if ($this->educationModel->create($_POST)) {
             setFlashMessage('curriculo_feedback', 'Nova formação adicionada com sucesso!', 'success');
         } else {
             setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao adicionar a formação.', 'danger');
@@ -197,21 +176,29 @@ class CurriculoController extends BaseAdminController
     public function updateEducation(int $id)
     {
         $this->validatePostRequest();
-        $data = [
-            'degree'      => $_POST['degree'] ?? '',
-            'institution' => $_POST['institution'] ?? '',
-            'start_year'  => $_POST['start_year'] ?? '',
-            'end_year'    => $_POST['end_year'] ?? '',
-        ];
 
-        if (empty($data['degree']) || empty($data['institution']) || empty($data['start_year'])) {
-            setFlashMessage('curriculo_feedback', 'Grau, Instituição e Ano de Início são obrigatórios.', 'danger');
+        // --- VALIDAÇÃO CENTRALIZADA ---
+        $validator = new Validator($_POST);
+        $validator->validate([
+            'degree' => 'required|min:4',
+            'institution' => 'required|min:3',
+            'start_year' => 'required|number',
+            'end_year' => 'number',
+        ]);
+
+        if ($validator->fails()) {
+            $_SESSION['errors'] = $validator->errors();
+            $_SESSION['old_input'] = $_POST;
+            $_SESSION['open_modal'] = '#editEducationModal';
+            $_SESSION['edit_id'] = $id;
+            header('Location: /admin/curriculo');
+            exit;
+        }
+
+        if ($this->educationModel->update($id, $_POST)) {
+            setFlashMessage('curriculo_feedback', 'Formação atualizada com sucesso!', 'success');
         } else {
-            if ($this->educationModel->update($id, $data)) {
-                setFlashMessage('curriculo_feedback', 'Formação atualizada com sucesso!', 'success');
-            } else {
-                setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao atualizar a formação.', 'danger');
-            }
+            setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao atualizar a formação.', 'danger');
         }
         header('Location: /admin/curriculo');
         exit;
@@ -238,21 +225,28 @@ class CurriculoController extends BaseAdminController
     {
         $this->validatePostRequest();
 
-        $data = [
-            'course_name'     => $_POST['course_name'] ?? '',
-            'institution'     => $_POST['institution'] ?? '',
-            'completion_year' => $_POST['completion_year'] ?? '',
-            'workload_hours'  => $_POST['workload_hours'] ?? '',
-        ];
+        // --- VALIDAÇÃO CENTRALIZADA ---
+        $validator = new Validator($_POST);
+        $validator->validate([
+            'course_name' => 'required|min:4',
+            'course_institution' => 'required|min:3',
+            'completion_year' => 'required|number',
+        ]);
 
-        if (empty($data['course_name']) || empty($data['institution']) || empty($data['completion_year'])) {
-            setFlashMessage('curriculo_feedback', 'Nome do Curso, Instituição e Ano de Conclusão são obrigatórios.', 'danger');
+        if ($validator->fails()) {
+            $_SESSION['errors'] = $validator->errors();
+            $_SESSION['old_input'] = $_POST;
+            $_SESSION['open_modal'] = '#addCourseModal';
+            header('Location: /admin/curriculo');
+            exit;
+        }
+        // --- FIM DA VALIDAÇÃO ---
+
+
+        if ($this->courseModel->create($_POST)) {
+            setFlashMessage('curriculo_feedback', 'Novo curso adicionado com sucesso!', 'success');
         } else {
-            if ($this->courseModel->create($data)) {
-                setFlashMessage('curriculo_feedback', 'Novo curso adicionado com sucesso!', 'success');
-            } else {
-                setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao adicionar o curso.', 'danger');
-            }
+            setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao adicionar o curso.', 'danger');
         }
 
         header('Location: /admin/curriculo');
@@ -265,21 +259,28 @@ class CurriculoController extends BaseAdminController
     public function updateCourse(int $id)
     {
         $this->validatePostRequest();
-        $data = [
-            'course_name'     => $_POST['course_name'] ?? '',
-            'institution'     => $_POST['institution'] ?? '',
-            'completion_year' => $_POST['completion_year'] ?? '',
-            'workload_hours'  => $_POST['workload_hours'] ?? '',
-        ];
 
-        if (empty($data['course_name']) || empty($data['institution']) || empty($data['completion_year'])) {
-            setFlashMessage('curriculo_feedback', 'Nome do Curso, Instituição e Ano de Conclusão são obrigatórios.', 'danger');
+        // --- VALIDAÇÃO CENTRALIZADA ---
+        $validator = new Validator($_POST);
+        $validator->validate([
+            'course_name' => 'required|min:4',
+            'course_institution' => 'required|min:3',
+            'completion_year' => 'required|number',
+        ]);
+
+        if ($validator->fails()) {
+            $_SESSION['errors'] = $validator->errors();
+            $_SESSION['old_input'] = $_POST;
+            $_SESSION['open_modal'] = '#editCourseModal';
+            $_SESSION['edit_id'] = $id;
+            header('Location: /admin/curriculo');
+            exit;
+        }
+
+        if ($this->courseModel->update($id, $_POST)) {
+            setFlashMessage('curriculo_feedback', 'Curso atualizado com sucesso!', 'success');
         } else {
-            if ($this->courseModel->update($id, $data)) {
-                setFlashMessage('curriculo_feedback', 'Curso atualizado com sucesso!', 'success');
-            } else {
-                setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao atualizar o curso.', 'danger');
-            }
+            setFlashMessage('curriculo_feedback', 'Ocorreu um erro ao atualizar o curso.', 'danger');
         }
         header('Location: /admin/curriculo');
         exit;

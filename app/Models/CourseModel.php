@@ -29,10 +29,10 @@ class CourseModel
     {
         try {
             $workload = !empty($data['workload_hours']) ? $data['workload_hours'] : null;
-            $sql = "INSERT INTO " . $this->table . " (course_name, institution, completion_year, workload_hours) VALUES (:course_name, :institution, :completion_year, :workload_hours)";
+            $sql = "INSERT INTO " . $this->table . " (course_name, course_institution, completion_year, workload_hours) VALUES (:course_name, :course_institution, :completion_year, :workload_hours)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':course_name', $data['course_name']);
-            $stmt->bindParam(':institution', $data['institution']);
+            $stmt->bindParam(':course_institution', $data['course_institution']);
             $stmt->bindParam(':completion_year', $data['completion_year'], PDO::PARAM_INT);
             $stmt->bindParam(':workload_hours', $workload, PDO::PARAM_INT);
             return $stmt->execute();
@@ -68,11 +68,11 @@ class CourseModel
     {
         try {
             $workload = !empty($data['workload_hours']) ? $data['workload_hours'] : null;
-            $sql = "UPDATE " . $this->table . " SET course_name = :course_name, institution = :institution, completion_year = :completion_year, workload_hours = :workload_hours WHERE id = :id";
+            $sql = "UPDATE " . $this->table . " SET course_name = :course_name, course_institution = :course_institution, completion_year = :completion_year, workload_hours = :workload_hours WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':course_name', $data['course_name']);
-            $stmt->bindParam(':institution', $data['institution']);
+            $stmt->bindParam(':course_institution', $data['course_institution']);
             $stmt->bindParam(':completion_year', $data['completion_year'], PDO::PARAM_INT);
             $stmt->bindParam(':workload_hours', $workload, PDO::PARAM_INT);
             return $stmt->execute();

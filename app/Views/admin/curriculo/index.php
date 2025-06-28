@@ -129,14 +129,14 @@
                     <?php foreach ($courses as $course): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($course['course_name']); ?></td>
-                            <td><?php echo htmlspecialchars($course['institution']); ?></td>
+                            <td><?php echo htmlspecialchars($course['course_institution']); ?></td>
                             <td><?php echo $course['completion_year']; ?></td>
                             <td class="text-end">
                                 <button type="button" class="btn btn-primary btn-sm edit-course-btn"
                                     data-bs-toggle="modal" data-bs-target="#editCourseModal"
                                     data-id="<?php echo $course['id']; ?>"
                                     data-course-name="<?php echo htmlspecialchars($course['course_name']); ?>"
-                                    data-institution="<?php echo htmlspecialchars($course['institution']); ?>"
+                                    data-course-institution="<?php echo htmlspecialchars($course['course_institution']); ?>"
                                     data-completion-year="<?php echo $course['completion_year']; ?>"
                                     data-workload-hours="<?php echo $course['workload_hours']; ?>">
                                     Editar
@@ -228,20 +228,32 @@
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="degree" class="form-label">Grau / Título</label>
-                        <input type="text" class="form-control" id="degree" name="degree" placeholder="Ex: Mestrado em Ciência da Computação" required>
+                        <input type="text" class="form-control <?php echo isset($errors['degree']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['degree'] ?? ''); ?>" id="degree" name="degree" placeholder="Ex: Mestrado em Ciência da Computação" required>
+                        <?php if (isset($errors['degree'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['degree']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="institution" class="form-label">Instituição</label>
-                        <input type="text" class="form-control" id="institution" name="institution" placeholder="Ex: Universidade Federal de Lavras (UFLA)" required>
+                        <input type="text" class="form-control <?php echo isset($errors['institution']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['institution'] ?? ''); ?>" id="institution" name="institution" placeholder="Ex: Universidade Federal de Lavras (UFLA)" required>
+                        <?php if (isset($errors['institution'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['institution']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="start_year" class="form-label">Ano de Início</label>
-                            <input type="number" class="form-control" id="start_year" name="start_year" placeholder="Ex: 2023" required>
+                            <input type="number" class="form-control <?php echo isset($errors['start_year']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['start_year'] ?? ''); ?>" id="start_year" name="start_year" placeholder="Ex: 2023" required>
+                            <?php if (isset($errors['start_year'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['start_year']); ?></div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="end_year" class="form-label">Ano de Término</label>
-                            <input type="number" class="form-control" id="end_year" name="end_year" placeholder="Ex: 2025">
+                            <input type="number" class="form-control <?php echo isset($errors['end_year']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['end_year'] ?? ''); ?>" id="end_year" name="end_year" placeholder="Ex: 2025">
+                            <?php if (isset($errors['end_year'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['end_year']); ?></div>
+                            <?php endif; ?>
                             <div class="form-text">Deixe em branco se estiver em andamento.</div>
                         </div>
                     </div>
@@ -268,20 +280,32 @@
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="course_name" class="form-label">Nome do Curso</label>
-                        <input type="text" class="form-control" id="course_name" name="course_name" required>
+                        <input type="text" class="form-control <?php echo isset($errors['course_name']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['course_name'] ?? ''); ?>" id="course_name" name="course_name" required>
+                        <?php if (isset($errors['course_name'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['course_name']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="course_institution" class="form-label">Instituição</label>
-                        <input type="text" class="form-control" id="course_institution" name="institution" required>
+                        <input type="text" class="form-control <?php echo isset($errors['course_institution']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['course_institution'] ?? ''); ?>" id="course_institution" name="course_institution" required>
+                        <?php if (isset($errors['course_institution'])): ?>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($errors['course_institution']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="completion_year" class="form-label">Ano de Conclusão</label>
-                            <input type="number" class="form-control" id="completion_year" name="completion_year" placeholder="Ex: 2021" required>
+                            <input type="number" class="form-control <?php echo isset($errors['completion_year']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['completion_year'] ?? ''); ?>" id="completion_year" name="completion_year" placeholder="Ex: 2021" required>
+                            <?php if (isset($errors['completion_year'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['completion_year']); ?></div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="workload_hours" class="form-label">Carga Horária (opcional)</label>
-                            <input type="number" class="form-control" id="workload_hours" name="workload_hours" placeholder="Ex: 40">
+                            <input type="number" class="form-control <?php echo isset($errors['workload_hours']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($old_input['workload_hours'] ?? ''); ?>" id="workload_hours" name="workload_hours" placeholder="Ex: 40">
+                            <?php if (isset($errors['workload_hours'])): ?>
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($errors['workload_hours']); ?></div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -294,7 +318,7 @@
     </div>
 </div>
 
-<!-- Modal para Editar Experiência -->
+<!-- Modal para Editar Experiência (Com lógica de erro) -->
 <div class="modal fade" id="editExperienceModal" tabindex="-1" aria-labelledby="editExperienceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -302,31 +326,34 @@
                 <h5 class="modal-title" id="editExperienceModalLabel">Editar Experiência Profissional</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editExperienceForm" method="POST" action=""> <!-- Action será definida via JS -->
+            <form id="editExperienceForm" method="POST" action="">
                 <div class="modal-body">
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="edit_job_title" class="form-label">Cargo</label>
-                        <input type="text" class="form-control" id="edit_job_title" name="job_title" required>
+                        <input type="text" class="form-control <?php echo (isset($errors['job_title']) && $openModal === '#editExperienceModal') ? 'is-invalid' : ''; ?>" id="edit_job_title" name="job_title" required>
+                        <?php if (isset($errors['job_title']) && $openModal === '#editExperienceModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['job_title']); ?></div><?php endif; ?>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_company" class="form-label">Empresa / Instituição</label>
-                        <input type="text" class="form-control" id="edit_company" name="company" required>
+                        <label for="edit_company" class="form-label">Empresa</label>
+                        <input type="text" class="form-control <?php echo (isset($errors['company']) && $openModal === '#editExperienceModal') ? 'is-invalid' : ''; ?>" id="edit_company" name="company" required>
+                        <?php if (isset($errors['company']) && $openModal === '#editExperienceModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['company']); ?></div><?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_start_date" class="form-label">Data de Início</label>
-                            <input type="date" class="form-control" id="edit_start_date" name="start_date" required>
+                            <input type="date" class="form-control <?php echo (isset($errors['start_date']) && $openModal === '#editExperienceModal') ? 'is-invalid' : ''; ?>" id="edit_start_date" name="start_date" required>
+                            <?php if (isset($errors['start_date']) && $openModal === '#editExperienceModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['start_date']); ?></div><?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_end_date" class="form-label">Data de Término</label>
                             <input type="date" class="form-control" id="edit_end_date" name="end_date">
-                            <div class="form-text">Deixe em branco se for o emprego atual.</div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_description" class="form-label">Descrição das Atividades</label>
-                        <textarea class="form-control" id="edit_description" name="description" rows="5" required></textarea>
+                        <label for="edit_description" class="form-label">Descrição</label>
+                        <textarea class="form-control <?php echo (isset($errors['description']) && $openModal === '#editExperienceModal') ? 'is-invalid' : ''; ?>" id="edit_description" name="description" rows="5" required></textarea>
+                        <?php if (isset($errors['description']) && $openModal === '#editExperienceModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['description']); ?></div><?php endif; ?>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -338,7 +365,7 @@
     </div>
 </div>
 
-<!-- Modal para Editar Formação -->
+<!-- Modal para Editar Formação (ATUALIZADO) -->
 <div class="modal fade" id="editEducationModal" tabindex="-1" aria-labelledby="editEducationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -351,16 +378,19 @@
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="edit_degree" class="form-label">Grau / Título</label>
-                        <input type="text" class="form-control" id="edit_degree" name="degree" required>
+                        <input type="text" class="form-control <?php echo (isset($errors['degree']) && $openModal === '#editEducationModal') ? 'is-invalid' : ''; ?>" id="edit_degree" name="degree" required>
+                        <?php if (isset($errors['degree']) && $openModal === '#editEducationModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['degree']); ?></div><?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="edit_institution" class="form-label">Instituição</label>
-                        <input type="text" class="form-control" id="edit_institution" name="institution" required>
+                        <input type="text" class="form-control <?php echo (isset($errors['institution']) && $openModal === '#editEducationModal') ? 'is-invalid' : ''; ?>" id="edit_institution" name="institution" required>
+                        <?php if (isset($errors['institution']) && $openModal === '#editEducationModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['institution']); ?></div><?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_start_year" class="form-label">Ano de Início</label>
-                            <input type="number" class="form-control" id="edit_start_year" name="start_year" required>
+                            <input type="number" class="form-control <?php echo (isset($errors['start_year']) && $openModal === '#editEducationModal') ? 'is-invalid' : ''; ?>" id="edit_start_year" name="start_year" required>
+                            <?php if (isset($errors['start_year']) && $openModal === '#editEducationModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['start_year']); ?></div><?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_end_year" class="form-label">Ano de Término</label>
@@ -378,7 +408,7 @@
     </div>
 </div>
 
-<!-- Modal para Editar Curso -->
+<!-- Modal para Editar Curso (ATUALIZADO) -->
 <div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -391,16 +421,19 @@
                     <?php echo csrfInput(); ?>
                     <div class="mb-3">
                         <label for="edit_course_name" class="form-label">Nome do Curso</label>
-                        <input type="text" class="form-control" id="edit_course_name" name="course_name" required>
+                        <input type="text" class="form-control <?php echo (isset($errors['course_name']) && $openModal === '#editCourseModal') ? 'is-invalid' : ''; ?>" id="edit_course_name" name="course_name" required>
+                        <?php if (isset($errors['course_name']) && $openModal === '#editCourseModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['course_name']); ?></div><?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="edit_course_institution" class="form-label">Instituição</label>
-                        <input type="text" class="form-control" id="edit_course_institution" name="institution" required>
+                        <input type="text" class="form-control <?php echo (isset($errors['course_institution']) && $openModal === '#editCourseModal') ? 'is-invalid' : ''; ?>" id="edit_course_institution" name="course_institution" required>
+                        <?php if (isset($errors['course_institution']) && $openModal === '#editCourseModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['course_institution']); ?></div><?php endif; ?>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_completion_year" class="form-label">Ano de Conclusão</label>
-                            <input type="number" class="form-control" id="edit_completion_year" name="completion_year" required>
+                            <input type="number" class="form-control <?php echo (isset($errors['completion_year']) && $openModal === '#editCourseModal') ? 'is-invalid' : ''; ?>" id="edit_completion_year" name="completion_year" required>
+                            <?php if (isset($errors['completion_year']) && $openModal === '#editCourseModal'): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['completion_year']); ?></div><?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_workload_hours" class="form-label">Carga Horária (opcional)</label>
@@ -417,117 +450,72 @@
     </div>
 </div>
 
-
-<!-- Script para Modais de Edição -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // JS para Modal de Edição de Experiência
-        const editExperienceModal = document.getElementById('editExperienceModal');
-        if (editExperienceModal) {
-            editExperienceModal.addEventListener('show.bs.modal', function(event) {
+document.addEventListener('DOMContentLoaded', function () {
+    
+    function setupEditModal(modalId, formId, dataAttributes) {
+        const modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            modalElement.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
+                if (!button) return;
+                
                 const id = button.getAttribute('data-id');
-                const jobTitle = button.getAttribute('data-job-title');
-                const company = button.getAttribute('data-company');
-                const startDate = button.getAttribute('data-start-date');
-                const endDate = button.getAttribute('data-end-date');
-                const description = button.getAttribute('data-description');
-
-                const form = editExperienceModal.querySelector('#editExperienceForm');
-                form.action = '/admin/curriculo/updateExperience/' + id;
-
-                form.querySelector('#edit_job_title').value = jobTitle;
-                form.querySelector('#edit_company').value = company;
-                form.querySelector('#edit_start_date').value = startDate;
-                form.querySelector('#edit_end_date').value = endDate;
-                form.querySelector('#edit_description').value = description;
+                const form = modalElement.querySelector('#' + formId);
+                
+                let actionBase = '';
+                if (modalId === 'editExperienceModal') actionBase = '/admin/curriculo/updateExperience/';
+                if (modalId === 'editEducationModal') actionBase = '/admin/curriculo/updateEducation/';
+                if (modalId === 'editCourseModal') actionBase = '/admin/curriculo/updateCourse/';
+                form.action = actionBase + id;
+                
+                dataAttributes.forEach(attr => {
+                    const input = form.querySelector(`#edit_${attr}`);
+                    if (input) {
+                       input.value = button.getAttribute(`data-${attr.replace(/_/g, '-')}`) || '';
+                    }
+                });
             });
         }
+    }
 
-        // JS para Modal de Edição de Formação
-        const editEducationModal = document.getElementById('editEducationModal');
-        if (editEducationModal) {
-            editEducationModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const id = button.getAttribute('data-id');
-                const degree = button.getAttribute('data-degree');
-                const institution = button.getAttribute('data-institution');
-                const startYear = button.getAttribute('data-start-year');
-                const endYear = button.getAttribute('data-end-year');
+    setupEditModal('editExperienceModal', 'editExperienceForm', ['job_title', 'company', 'start_date', 'end_date', 'description']);
+    setupEditModal('editEducationModal', 'editEducationForm', ['degree', 'institution', 'start_year', 'end_year']);
+    setupEditModal('editCourseModal', 'editCourseForm', ['course_name', 'course_institution', 'completion_year', 'workload_hours']);
 
-                const form = editEducationModal.querySelector('#editEducationForm');
-                form.action = '/admin/curriculo/updateEducation/' + id;
 
-                form.querySelector('#edit_degree').value = degree;
-                form.querySelector('#edit_institution').value = institution;
-                form.querySelector('#edit_start_year').value = startYear;
-                form.querySelector('#edit_end_year').value = endYear;
-            });
-        }
+    const modalToOpenId = <?php echo json_encode($openModal ?? null); ?>;
+    if (modalToOpenId) {
+        const modalElement = document.querySelector(modalToOpenId);
+        if (modalElement) {
+            const modalInstance = new bootstrap.Modal(modalElement);
+            const form = modalElement.querySelector('form');
+            const oldInput = <?php echo json_encode($old_input ?? []); ?>;
 
-        // JS para Modal de Edição de Curso
-        const editCourseModal = document.getElementById('editCourseModal');
-        if (editCourseModal) {
-            editCourseModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const id = button.getAttribute('data-id');
-                const courseName = button.getAttribute('data-course-name');
-                const institution = button.getAttribute('data-institution');
-                const completionYear = button.getAttribute('data-completion-year');
-                const workloadHours = button.getAttribute('data-workload-hours');
+            if (modalToOpenId.startsWith('#edit')) {
+                const editId = <?php echo json_encode($edit_id ?? null); ?>;
+                if (form && oldInput && editId) {
+                    let actionBase = '';
+                    if(modalToOpenId === '#editExperienceModal') actionBase = '/admin/curriculo/updateExperience/';
+                    if(modalToOpenId === '#editEducationModal') actionBase = '/admin/curriculo/updateEducation/';
+                    if(modalToOpenId === '#editCourseModal') actionBase = '/admin/curriculo/updateCourse/';
+                    form.action = actionBase + editId;
+                }
+            }
 
-                const form = editCourseModal.querySelector('#editCourseForm');
-                form.action = '/admin/curriculo/updateCourse/' + id;
-
-                form.querySelector('#edit_course_name').value = courseName;
-                form.querySelector('#edit_course_institution').value = institution;
-                form.querySelector('#edit_completion_year').value = completionYear;
-                form.querySelector('#edit_workload_hours').value = workloadHours;
-            });
-        }
-
-        const modalToOpen = '<?php echo $openModal ?? ''; ?>';
-
-        if (modalToOpen) {
-            const modalElement = document.querySelector(modalToOpen);
-            if (modalElement) {
-                const modal = new bootstrap.Modal(modalElement);
-
-                // Se for um modal de edição, precisamos preenchê-lo com os dados antigos
-                if (modalToOpen.startsWith('#edit')) {
-                    // Recupera os dados do input antigo que o PHP guardou
-                    const oldInput = <?php echo json_encode($_SESSION['old_input'] ?? []); ?>;
-                    const editId = <?php echo json_encode($_SESSION['edit_id'] ?? null); ?>;
-                    unset($_SESSION['old_input'], $_SESSION['edit_id']);
-
-                    const form = modalElement.querySelector('form');
-                    if (form && oldInput) {
-                        // Atualiza a action do formulário para o ID correto
-                        if (editId) {
-                            const originalAction = form.getAttribute('action');
-                            // Substitui o final da action pelo ID correto, se necessário.
-                            // Esta parte pode precisar de ajuste dependendo da sua rota.
-                            // Exemplo: /admin/curriculo/updateExperience/
-                            let actionBase = originalAction.substring(0, originalAction.lastIndexOf('/') + 1);
-                            if (modalToOpen === '#editExperienceModal') actionBase = '/admin/curriculo/updateExperience/';
-                            if (modalToOpen === '#editEducationModal') actionBase = '/admin/curriculo/updateEducation/';
-                            if (modalToOpen === '#editCourseModal') actionBase = '/admin/curriculo/updateCourse/';
-
-                            form.action = actionBase + editId;
-                        }
-
-                        // Preenche cada campo do formulário com os valores antigos
-                        for (const key in oldInput) {
-                            const inputField = form.querySelector(`[name="${key}"]`);
-                            if (inputField) {
-                                inputField.value = oldInput[key];
-                            }
-                        }
+            if(form && oldInput) {
+                for (const key in oldInput) {
+                    const inputField = form.querySelector(`[name="${key}"]`);
+                    if (inputField) {
+                        // Para os modais de edição, os IDs têm prefixo 'edit_'
+                        // mas os nomes dos campos são os mesmos. O seletor por nome funciona para ambos.
+                        inputField.value = oldInput[key];
                     }
                 }
-
-                modal.show();
             }
+            
+            modalInstance.show();
         }
-    });
+    }
+});
 </script>

@@ -19,6 +19,9 @@ define('PUBLIC_PATH', __DIR__);
 // Inclui o autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Inclui o autoloader do Composer Hostinger
+//require_once __DIR__ . '/../meu_app_blog/vendor/autoload.php';
+
 // --- CARREGA AS VARIÁVEIS DE AMBIENTE DO .ENV ---
 try {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); // Aponta para a raiz do projeto

@@ -16,8 +16,8 @@
 <article class="blog-post">
     <h2 class="display-5 link-body-emphasis mb-1"><?php echo isset($contentTitle) ? htmlspecialchars($contentTitle) : 'Título do Post'; ?></h2>
     <p class="blog-post-meta text-muted">
-        Publicado em: <?php echo date('d/m/Y H:i', strtotime($post['created_at'])); ?>
-        <?php if (isset($post['updated_at']) && $post['updated_at'] !== $post['created_at']): ?>
+        Publicado em: <?php echo date('d/m/Y H:i', strtotime($post['published_at'])); ?>
+        <?php if (isset($post['updated_at']) && $post['updated_at'] !== $post['published_at']): ?>
             | Atualizado em: <?php echo date('d/m/Y H:i', strtotime($post['updated_at'])); ?>
         <?php endif; ?>
     </p>
