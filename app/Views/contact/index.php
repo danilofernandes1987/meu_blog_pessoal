@@ -57,8 +57,8 @@ displayFlashMessage('contact_feedback');
     </div>
     <div class="col-md-4">
         <h4>Outras formas de contato:</h4>
-        <p><strong>E-mail:</strong> <a href="mailto:seu-email@example.com">seu-email@example.com</a></p>
-        <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/seu-perfil" target="_blank">seu-perfil</a></p>
+        <p><strong>E-mail:</strong> <a href="mailto:tec.danfer@gmail.com">tec.danfer@gmail.com</a></p>
+        <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/danilofernandessilva/" target="_blank">danilofernandessilva</a></p>
         <p><strong>GitHub:</strong> <a href="https://github.com/danilofernandes1987" target="_blank">danilofernandes1987</a></p>
     </div>
 </div>

@@ -23,7 +23,7 @@
 
             <!-- O nome usa a variável global $myName, que vem do seu config/app.php -->
             <h4><?php echo htmlspecialchars($myName ?? 'Danilo F. Silva'); ?></h4>
-            <p class="text-muted">Técnico de TI | Entusiasta PHP</p>
+            <p class="text-muted">Técnico de TI | Entusiasta em Segurança</p>
 
             <a href="https://www.linkedin.com/in/danilofernandessilva/" class="btn btn-primary btn-sm" aria-label="LinkedIn" target="_blank">
                 <i class="bi bi-linkedin"></i> <span class="visually-hidden">LinkedIn</span>
@@ -59,3 +59,33 @@
             <?php endif; ?>
         </div>
     </div>
+</div>
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="mb-4">Últimos Posts do Blog</h2>
+        <hr class="mb-4">
+    </div>
+
+    <div class="col-12">
+        <?php if (!empty($recentPosts)): ?>
+            <ul class="list-group list-group-flush">
+                <?php foreach ($recentPosts as $post): ?>
+                    <li class="list-group-item px-0">
+                        <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>" class="text-decoration-none h5 text-body">
+                            <?php echo htmlspecialchars($post['title']); ?>
+                        </a>
+                        <p class="text-muted small mb-0">
+                            <?php 
+                                $publicationDate = $post['published_at'] ?? $post['created_at'];
+                                echo 'Publicado em ' . date('d/m/Y', strtotime($publicationDate)); 
+                            ?>
+                        </p>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>Nenhum post publicado ainda. Volte em breve!</p>
+        <?php endif; ?>
+    </div>
+
+</div>

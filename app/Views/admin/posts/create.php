@@ -54,6 +54,19 @@
         <?php endif; ?>
     </div>
 
+    <hr class="my-4">
+    <h4>Otimização para SEO</h4>
+    <div class="mb-3">
+        <label for="meta_title" class="form-label">Meta Título</label>
+        <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?php echo htmlspecialchars($post['meta_title'] ?? ''); ?>">
+        <div class="form-text">O título que aparecerá na aba do navegador e nos resultados do Google (recomendado: 50-60 caracteres). Se deixado em branco, o título principal do post será usado.</div>
+    </div>
+    <div class="mb-3">
+        <label for="meta_description" class="form-label">Meta Descrição</label>
+        <textarea class="form-control" id="meta_description" name="meta_description" rows="3"><?php echo htmlspecialchars($post['meta_description'] ?? ''); ?></textarea>
+        <div class="form-text">Uma breve descrição do post para os resultados de busca (recomendado: 150-160 caracteres).</div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Salvar Post</button>
     <a href="/admin/posts" class="btn btn-secondary">Cancelar</a>
 </form>

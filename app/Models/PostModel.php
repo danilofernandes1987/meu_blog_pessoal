@@ -9,7 +9,7 @@ class PostModel
 {
     /** @var PDO A instância da conexão com o banco de dados. */
     private PDO $db;
-    
+
     /** @var string O nome da tabela de posts. */
     private string $table = 'posts';
 
@@ -28,7 +28,7 @@ class PostModel
     public function findAll(int $limit, int $offset): array
     {
         try {
-            $query = "SELECT id, title, slug, LEFT(content, 200) AS excerpt, created_at, published_at, featured_image 
+            $query = "SELECT id, title, slug, LEFT(content, 200) AS excerpt, created_at, published_at, featured_image, meta_title, meta_description 
                       FROM " . $this->table . " 
                       WHERE status = 'published' 
                       ORDER BY published_at DESC, created_at DESC
@@ -42,6 +42,22 @@ class PostModel
         } catch (\PDOException $e) {
             // Em um ambiente de produção, é ideal logar o erro sem interromper o fluxo do usuário.
             // error_log("Erro ao buscar posts paginados: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Busca todos os posts publicados para o sitemap.
+     * Retorna apenas os campos necessários para otimização.
+     * @return array
+     */
+    public function getAllForSitemap(): array
+    {
+        try {
+            $query = "SELECT slug, updated_at FROM " . $this->table . " WHERE status = 'published' ORDER BY updated_at DESC";
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             return [];
         }
     }
@@ -71,7 +87,7 @@ class PostModel
     public function findBySlug(string $slug): array|false
     {
         try {
-            $query = "SELECT id, title, slug, content, created_at, updated_at, published_at, featured_image
+            $query = "SELECT id, title, slug, content, created_at, updated_at, published_at, featured_image, meta_title, meta_description
                       FROM " . $this->table . " 
                       WHERE slug = :slug AND status = 'published'
                       LIMIT 1";
@@ -93,7 +109,7 @@ class PostModel
     public function findById(int $id): array|false
     {
         try {
-            $query = "SELECT id, title, slug, content, status, created_at, updated_at, published_at, featured_image
+            $query = "SELECT id, title, slug, content, status, created_at, updated_at, published_at, featured_image, meta_title, meta_description
                       FROM " . $this->table . " 
                       WHERE id = :id 
                       LIMIT 1";
@@ -131,9 +147,9 @@ class PostModel
     public function create(array $data): int|false
     {
         try {
-            $sql = "INSERT INTO " . $this->table . " (title, slug, content, status, author_id, featured_image, published_at) 
-                    VALUES (:title, :slug, :content, :status, :author_id, :featured_image, :published_at)";
-            
+            $sql = "INSERT INTO " . $this->table . " (title, slug, content, status, author_id, featured_image, published_at, meta_title, meta_description) 
+                    VALUES (:title, :slug, :content, :status, :author_id, :featured_image, :published_at, :meta_title, :meta_description)";
+
             $stmt = $this->db->prepare($sql);
 
             // bindValue é usado aqui por sua flexibilidade em lidar com valores nulos,
@@ -142,6 +158,8 @@ class PostModel
             $stmt->bindValue(':slug', $data['slug']);
             $stmt->bindValue(':content', $data['content']);
             $stmt->bindValue(':status', $data['status']);
+            $stmt->bindValue(':meta_title', $data['meta_title']);
+            $stmt->bindValue(':meta_description', $data['meta_description']);
             $stmt->bindValue(':author_id', $data['author_id'] ?? null, PDO::PARAM_INT);
             $stmt->bindValue(':featured_image', $data['featured_image'] ?? null, PDO::PARAM_STR);
             $stmt->bindValue(':published_at', $data['published_at'] ?? null);
@@ -171,9 +189,11 @@ class PostModel
                         content = :content, 
                         status = :status,
                         featured_image = :featured_image,
-                        published_at = :published_at
+                        published_at = :published_at,
+                        meta_title = :meta_title,
+                        meta_description = :meta_description
                     WHERE id = :id";
-            
+
             $stmt = $this->db->prepare($sql);
 
             $stmt->bindValue(':title', $data['title']);
@@ -182,6 +202,8 @@ class PostModel
             $stmt->bindValue(':status', $data['status']);
             $stmt->bindValue(':featured_image', $data['featured_image'] ?? null, PDO::PARAM_STR);
             $stmt->bindValue(':published_at', $data['published_at'] ?? null);
+            $stmt->bindValue(':meta_title', $data['meta_title'] ?? null);
+            $stmt->bindValue(':meta_description', $data['meta_description'] ?? null);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
             return $stmt->execute();
@@ -224,7 +246,7 @@ class PostModel
                     WHERE status = 'published' AND (title LIKE ? OR content LIKE ?)
                     ORDER BY published_at DESC, created_at DESC
                     LIMIT ? OFFSET ?";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$searchTerm, $searchTerm, $limit, $offset]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -243,7 +265,7 @@ class PostModel
         try {
             $searchTerm = '%' . $term . '%';
             $sql = "SELECT COUNT(*) FROM " . $this->table . " WHERE status = 'published' AND (title LIKE ? OR content LIKE ?)";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$searchTerm, $searchTerm]);
             return (int) $stmt->fetchColumn();
@@ -265,5 +287,16 @@ class PostModel
         } catch (\PDOException $e) {
             return 0;
         }
+    }
+
+    /**
+     * Busca os posts publicados mais recentes.
+     * @param int $limit O número de posts a serem retornados.
+     * @return array Uma lista de posts.
+     */
+    public function findRecent(int $limit = 5): array
+    {
+        // Reutiliza o método findAll que já tem a lógica de ordenação e status
+        return $this->findAll($limit, 0);
     }
 }

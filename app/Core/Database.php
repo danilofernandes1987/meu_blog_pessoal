@@ -42,6 +42,7 @@ class Database {
 
         try {
             $this->connection = new PDO($dsn, $this->username, $this->password, $this->options);
+            $this->connection->exec("SET time_zone = '-03:00'");
         } catch (PDOException $e) {
             // Para desenvolvimento, 'die' mostra o erro. Em produção, logue o erro e mostre uma mensagem amigável.
             // error_log('Erro de Conexão com BD: ' . $e->getMessage());

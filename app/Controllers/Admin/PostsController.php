@@ -175,12 +175,17 @@ class PostsController extends BaseAdminController
         $slug = trim($_POST['slug'] ?? '');
         $content = trim($_POST['content'] ?? '');
         $status = $_POST['status'] ?? 'draft';
+        $meta_description = trim($_POST['meta_description'] ?? '');
+        $meta_title = trim($_POST['meta_title'] ?? NULL);
+
 
         $dataToUpdate = [
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
             'status' => $status,
+            'meta_description' => $meta_description,
+            'meta_title' => $meta_title,
             'featured_image' => ($newImageName !== null) ? $newImageName : $postOriginal['featured_image'],
         ];
 

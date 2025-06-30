@@ -17,6 +17,13 @@ class Router
         // Ex: para /admin/dashboard/index -> ['admin', 'dashboard', 'index']
         // Ex: para / -> ['']
 
+        // --- ROTA ESPECIAL PARA SITEMAP ---
+        if (isset($urlParts[0]) && $urlParts[0] === 'sitemap.xml') {
+            $this->dispatchRoute('App\\Controllers\\SitemapController', 'index', []);
+            return; // Encerra a execução do construtor
+        }
+        // --- FIM DA ROTA ESPECIAL ---
+
         // 1. Verifica se é uma rota administrativa e define o namespace e o controller base
         if (!empty($urlParts[0]) && strtolower($urlParts[0]) === 'admin') {
             $this->currentControllerNamespace = "App\\Controllers\\Admin\\";
