@@ -60,7 +60,7 @@ class BaseAdminController extends BaseController
             }
 
 
-            $maxFileSize = 2 * 1024 * 1024; // 2 MB
+            $maxFileSize = 4 * 1024 * 1024; // 4 MB
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
             // 1. Validação de tamanho
