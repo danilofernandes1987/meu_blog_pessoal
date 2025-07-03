@@ -44,7 +44,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="/css/style.css">
-    <script>
+    <!--<script>
         function loadGoogleAnalytics() {
             const gaScript = document.createElement('script');
             gaScript.async = true;
@@ -60,7 +60,7 @@
             gtag('config', 'G-R3CK5WRW24');
             console.log("Google Analytics carregado após consentimento.");
         }
-    </script>
+    </script>-->
 </head>
 
 <body class="d-flex flex-column min-vh-100">

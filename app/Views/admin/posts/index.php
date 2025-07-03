@@ -24,14 +24,43 @@
                     <td><?php echo $post['id']; ?></td>
                     <td><?php echo htmlspecialchars($post['title']); ?></td>
                     <td><?php echo htmlspecialchars($post['slug']); ?></td>
-                    <td><span class="badge bg-<?php echo ($post['status'] === 'published') ? 'success' : 'secondary'; ?>"><?php echo htmlspecialchars(ucfirst($post['status'])); ?></span></td>
+                    <td>
+                        <span class="badge bg-<?php echo ($post['status'] === 'published') ? 'success' : 'secondary'; ?>">
+                            <?php echo htmlspecialchars(ucfirst($post['status'])); ?>
+                        </span>
+                    </td>
                     <td><?php echo date('d/m/Y H:i', strtotime($post['created_at'])); ?></td>
                     <td>
-                        <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>" class="btn btn-info btn-sm" target="_blank" title="Ver Post (Público)">Ver</a>
-                        <a href="/admin/posts/edit/<?php echo $post['id']; ?>" class="btn btn-primary btn-sm">Editar</a> <a href="/admin/posts/delete/<?php echo $post['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este post?');">Excluir</a>
+
+                        <!-- Ver -->
+                        <a href="/posts/show/<?php echo htmlspecialchars($post['slug']); ?>"
+                            class="btn btn-info btn-sm icon-btn"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Ver Post (Público)" target="_blank">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <!-- Editar -->
+                        <a href="/admin/posts/edit/<?php echo $post['id']; ?>"
+                            class="btn btn-primary btn-sm icon-btn"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <!-- Excluir -->
+                        <a href="/admin/posts/delete/<?php echo $post['id']; ?>"
+                            class="btn btn-danger btn-sm icon-btn"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Excluir"
+                            onclick="return confirm('Tem certeza que deseja excluir este post?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
                     </td>
                 </tr>
             <?php endforeach; ?>
+
+
         </tbody>
     </table>
 <?php else: ?>
@@ -39,3 +68,11 @@
         Nenhum post encontrado. <a href="/admin/posts/create">Crie o primeiro!</a>
     </div>
 <?php endif; ?>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>

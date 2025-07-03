@@ -154,6 +154,16 @@ h1 {
     margin-bottom: 1rem;
 }
 
+.icon-btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    vertical-align: middle; /* Alinha com o meio da linha */
+}
+.icon-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+
 /* Em telas pequenas, diminui o espaçamento */
 @media (max-width: 767px) {
     .timeline {
